@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="css/style.css" />
+</h:head>
+<h:body>
+	<div id="site" >
+		<div id="wrapper">
+			<div id="headerwrap">
+				<div id="header">
+				<h1 class="logoText">Controller für Modulkataloganalyse</h1>
+				<h2 class="logoText">Projekt EduGraph</h2>
+				</div>
+			</div>
+			<div id="navigationwrap">
+				<div id="navigation">
+					<p:panelGrid style="height:40px;">
+					<!-- 	<p:commandButton value="Katalog hinzufügen" icon="ui-icon-document" style="font-size:120%;"/>  -->
+					<!--	<p:commandButton value="Katalog anzeigen / bearbeiten" icon="ui-icon-clipboard" style="font-size:120%;"/>  -->
+					</p:panelGrid>
+				</div>
+			</div>
+			<div id="contentwrap">
+				<div id="content">			
+					 <h:form id="myform" enctype="multipart/form-data">
+					 <p:messages globalOnly="true" autoUpdate="true"/>
+						<p:dataTable id="tblItems" var="katalog" value="#{controlFormController.katalog.controlItems}" style="width:1250px;">
+							<f:facet name="header">ControlFormular</f:facet>
+							<p:column headerText="Eigenschaft" style="widht:400px;">
+								<p:outputLabel id="inputName" value="#{katalog.fieldname}" />
+							</p:column>
+							<p:column headerText="Wert" style="width:850px;">
+								<p:inputText id="stringInputValue" value="#{katalog.fieldValue}" rendered="#{katalog.type=='STRING'}"/>
+								<p:fileUpload id="fileInputValue" rendered="#{katalog.type=='FILE'}" allowTypes="/(\.|\/)(doc|docx|pdf)$/" mode="simple" value="#{controlFormController.katalogFile}"/>
+								<p:inputNumber id="numberInputValue" value="#{katalog.fieldValue}" rendered="#{katalog.type=='NUMBER'}"/>
+							</p:column>
+					     	<f:facet name="footer">	
+    							<p:commandButton value="Module und Parts extrahieren" action="#{controlFormController.save()}" id="submit" ajax="false"/>
+    						 </f:facet>
+					</p:dataTable>
+					</h:form>		
+				</div>
+			</div>
+			<div id="footerwrap">
+				<div id="footer">
+					<p>This is the Footer</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>

@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JBoss, Home of Professional Open Source Copyright 2013, Red Hat, Inc. 
+	and/or its affiliates, and individual contributors by the @authors tag. See 
+	the copyright.txt in the distribution for a full listing of individual contributors. 
+	Licensed under the Apache License, Version 2.0 (the "License"); you may not 
+	use this file except in compliance with the License. You may obtain a copy 
+	of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!--<groupId>org.thb.demomodulkatalog</groupId> -->
+	<groupId>org.thb.modulkatalogcontroller</groupId>
+	<artifactId>ModulKatalogController</artifactId>
+	<version>1</version>
+	<packaging>war</packaging>
+	<name>WildFly EduGraph-ModulKatalogController</name>
+	<description>The ModulkatalogController provides Textextraction of given Modulkatalogs for B.Sc. WI </description>
+
+	<url>http://wildfly.org</url>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- JBoss dependency versions -->
+		<version.wildfly.maven.plugin>1.0.2.Final</version.wildfly.maven.plugin>
+
+		<!-- Define the version of the JBoss BOMs we want to import to specify 
+			tested stacks. -->
+		<version.jboss.bom>10.0.0.Final</version.jboss.bom>
+
+		<!-- other plugin versions -->
+		<version.compiler.plugin>3.6</version.compiler.plugin>
+		<version.surefire.plugin>2.19</version.surefire.plugin>
+		<version.war.plugin>2.6</version.war.plugin>
+		<version.plugin.resources>3.0.0</version.plugin.resources>
+		<version.checkstyle.plugin>2.17</version.checkstyle.plugin>
+
+		<!-- maven-compiler-plugin -->
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+
+		<version.primefaces>6.0</version.primefaces>
+		<version.primefaces.themes>1.0.10</version.primefaces.themes>
+		<version.apache.commonsIO>2.5</version.apache.commonsIO>
+		<version.apache.commons>3.5</version.apache.commons>
+		<poi.version>3.13</poi.version>
+		<version.apache.pdfbox>2.0.3</version.apache.pdfbox>
+		<version.apache.solrj>6.0.1</version.apache.solrj>
+		<version.fasterxml.jackson>2.7.4</version.fasterxml.jackson>
+		<version.mongodb>3.4.0</version.mongodb>
+	</properties>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.wildfly.bom</groupId>
+				<artifactId>wildfly-javaee7-with-tools</artifactId>
+				<version>${version.jboss.bom}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.annotation</groupId>
+			<artifactId>jboss-annotations-api_1.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ws.rs</groupId>
+			<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>jaxrs-api</artifactId> 
+			<scope>provided</scope> </dependency> -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.spec.javax.servlet</groupId>
+			<artifactId>jboss-servlet-api_3.1_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.spec.javax.faces</groupId>
+			<artifactId>jboss-jsf-api_2.2_spec</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${version.fasterxml.jackson}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${version.fasterxml.jackson}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${version.fasterxml.jackson}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>${version.fasterxml.jackson}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator-annotation-processor</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.protocol</groupId>
+			<artifactId>arquillian-protocol-servlet</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- From here, Starting the dependency for Application -->
+		<dependency>
+			<groupId>org.primefaces</groupId>
+			<artifactId>primefaces</artifactId>
+			<version>${version.primefaces}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.primefaces.themes</groupId>
+			<artifactId>all-themes</artifactId>
+			<version>${version.primefaces.themes}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${version.apache.commonsIO}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>${version.apache.pdfbox}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${version.apache.commons}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>${version.apache.solrj}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-scratchpad</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>${version.mongodb}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>bson</artifactId>
+			<version>${version.mongodb}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-core</artifactId>
+			<version>${version.mongodb}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.57</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>${version.war.plugin}</version>
+					<configuration>
+						<!-- Java EE 7 doesn't require web.xml, Maven needs to catch up! -->
+						<failOnMissingWebXml>false</failOnMissingWebXml>
+					</configuration>
+				</plugin>
+				<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
+					<version>${version.wildfly.maven.plugin}</version> </plugin> -->
+				<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-resources-plugin</artifactId> 
+					<version>${version.plugin.resources}</version> <executions> <execution> <id>copy-standalone-xml</id> 
+					<phase>generate-test-sources</phase> <goals> <goal>copy-resources</goal> 
+					</goals> <configuration> <outputDirectory>${env.JBOSS_HOME}/standalone/configuration</outputDirectory> 
+					<resources> <resource> <directory>src/main/resources/jboss</directory> </resource> 
+					</resources> </configuration> </execution> </executions> </plugin> -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${version.surefire.plugin}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${version.checkstyle.plugin}</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>checkstyle</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.4</version>
+				<configuration>
+					<xmlOutput>true</xmlOutput>
+					<xmlOutputDirectory>target/site</xmlOutputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<profiles>
+
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.amazonaws</groupId>
+					<artifactId>aws-java-sdk</artifactId>
+					<version>1.11.57</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
+						<version>${version.wildfly.maven.plugin}</version> <executions> <execution> 
+						<configuration> <configuration> <serverConfig>standalone.xml</serverConfig> 
+						<jvmArgs>-Djboss.socket.binding.port-offset=100</jvmArgs> <filename>${project.artifactId}.war</filename> 
+						</configuration> </configuration> <phase>install</phase> <goals> <goal>deploy</goal> 
+						</goals> </execution> </executions> </plugin> -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy
+											file="src/main/resources/application/application.dev.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>**/profileAWS/*.class</packagingExcludes>
+							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
+						</configuration>
+					</plugin>
+					<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
+						<configuration> <excludes> <exclude>**/profileAWS/AmazonS3Access.java</exclude> 
+						<exclude>**/profileAWS/AmazonS3UploadImpl.java</exclude> <exclude>**/profileAWS/KatalogDAODynamoDBImpl.java</exclude> 
+						<exclude>**/profileAWS/LambdaCalculationServiceImpl.java</exclude> </excludes> 
+						</configuration> </plugin> -->
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>thb</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.amazonaws</groupId>
+					<artifactId>aws-java-sdk</artifactId>
+					<version>1.11.57</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<properties>
+				<build.profile.id>thb</build.profile.id>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<outputDirectory></outputDirectory>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy
+											file="src/main/resources/application/application.thb.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>**/profileAWS/*.class</packagingExcludes>
+							<!-- <outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/profileAWS/AmazonS3Access.java</exclude>
+								<exclude>**/profileAWS/AmazonS3UploadImpl.java</exclude>
+								<exclude>**/profileAWS/KatalogDAODynamoDBImpl.java</exclude>
+								<exclude>**/profileAWS/LambdaCalculationServiceImpl.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>aws</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.profile.id>aws</build.profile.id>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongo-java-driver</artifactId>
+					<version>${version.mongodb}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>bson</artifactId>
+					<version>${version.mongodb}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongodb-driver-core</artifactId>
+					<version>${version.mongodb}</version>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>test</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<delete
+											file="${project.build.outputDirectory}/application.properties" />
+										<copy
+											file="src/main/resources/application/application.aws.properties"
+											tofile="${project.build.outputDirectory}/application.properties" />
+									</tasks>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-war-plugin</artifactId>
+						<configuration>
+							<packagingExcludes>**/profileTHB/*.class</packagingExcludes>
+							<!-- <outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/profileTHB/KatalogDAOMongoDBImpl.java</exclude>
+								<exclude>**/profileTHB/CalculationServiceImpl.java</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+</project>

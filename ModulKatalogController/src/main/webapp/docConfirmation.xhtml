@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<h:head>
+	<h:outputStylesheet name="css/style.css" />
+</h:head>
+<h:body>
+	<div id="site">
+		<div id="wrapper">
+			<div id="headerwrap">
+				<div id="header">
+					<h1 class="logoText">Controller für Modulkataloganalyse</h1>
+					<h2 class="logoText">Projekt EduGraph</h2>
+				</div>
+			</div>
+			<div id="navigationwrap">
+				<div id="navigation">
+					<p:panelGrid style="height:40px;">
+						<!-- <p:commandButton value="Katalog hinzufügen"
+							icon="ui-icon-document" style="font-size:120%;" /> -->
+						<!--  <p:commandButton value="Katalog anzeigen / bearbeiten"
+							icon="ui-icon-clipboard" style="font-size:120%;" /> -->
+					</p:panelGrid>
+				</div>
+			</div>
+			<div id="contentwrap">
+				<div id="content">
+					<h:form>
+						<p:dataTable id="tblItems2" var="katalog" value="#{controlFormController.katalog.controlItems}" style="width:1250px;">
+							<f:facet name="header">Bestätigung</f:facet>
+							<p:column headerText="Eigenschaft" style="widht:300px;">
+								<p:outputLabel value="#{katalog.fieldname}" />
+							</p:column>
+							<p:column headerText="Wert" style="width:950px;">
+								<p:outputLabel value="#{katalog.fieldValue}"
+									rendered="#{katalog.type=='STRING'}" />
+								<p:outputLabel value="#{katalog.fieldValue}"
+									rendered="#{katalog.type=='NUMBER'}" />
+								<p:outputLabel value="#{katalog.file.absolutePath}"
+									rendered="#{katalog.type=='FILE'}" />
+							</p:column>
+							<f:facet name="footer">
+								<p:commandButton value="Katalog in DB speichern with controllerinvoke" action="#{saveFormController.save(controlFormController.katalog)}"/>
+							</f:facet>
+						</p:dataTable>
+						<br />
+						<p:dataTable id="mdlItems2" var="katalogModul" value="#{controlFormController.katalog.moduls}" style="width:1250px;">
+							<f:facet name="header">Module</f:facet>
+							<p:column headerText="Modulname" style="widht:50px;">
+								<p:outputLabel value="#{katalogModul.modulName}" />
+							</p:column>
+							<p:column headerText="ModulScores" style="widht:400px;">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="InfScore: "/>
+									<p:outputLabel value="#{katalogModul.infScore}"/>
+									
+									<p:outputLabel value="BwlScore: "/>
+									<p:outputLabel value="#{katalogModul.bwlScore}"/>
+									
+									<p:outputLabel value="WiScore: "/>
+									<p:outputLabel value="#{katalogModul.wiScore}"/>
+
+									<p:outputLabel value="NNScore: "/>
+									<p:outputLabel value="#{katalogModul.nnScrore}"/>
+								</p:panelGrid>
+							</p:column>
+							<p:column headerText="ModulScoresNormalized" style="widht:400px;">
+								<p:panelGrid columns="2">
+									<p:outputLabel value="InfScoreNormalized: "/>
+									<p:outputLabel value="#{katalogModul.infScoreNormalized}"/>
+									
+									<p:outputLabel value="BwlScoreNormalized: "/>
+									<p:outputLabel value="#{katalogModul.bwlScoreNormalized}"/>
+									
+									<p:outputLabel value="WiScoreNormalized: "/>
+									<p:outputLabel value="#{katalogModul.wiScoreNormalized}"/>
+
+									<p:outputLabel value="NNScoreNormalized: "/>
+									<p:outputLabel value="#{katalogModul.nnScoreNormalized}"/>
+								</p:panelGrid>
+							</p:column>
+							<p:column headerText="ECTS" style="widht:400px;">
+								<p:outputLabel value="#{katalogModul.ects}"/>
+							</p:column>
+						</p:dataTable>
+						<br />
+					</h:form>
+				</div>
+			</div>
+			<div id="footerwrap">
+				<div id="footer">
+					<p>Copyright Manuel Raddatz</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</h:body>
+</html>
