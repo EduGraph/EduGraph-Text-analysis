@@ -6,10 +6,10 @@ The Application is build and optimized for JBoss (wildfly) Application Server. T
 It can be used in 3 different environments. The environments are configurated through properties files and the pom.xml from Maven.
 
 1.) Environment: Development "dev". Everything has to be on localhost. 
-    - Wildfly 10.1.0.Final AS
-    - Solr Server 6.3.0 
-    - MongoDB 3.4.0 Community Edition
-    - local storage for catalog files
+    * Wildfly 10.1.0.Final AS
+    * Solr Server 6.3.0 
+    * MongoDB 3.4.0 Community Edition
+    * local storage for catalog files
     
 2.) Environment: University of Applied Science Brandenburg an der Havel "thb". Everything runs on a given Server from the university
     - Wildfly 10.1.0.Final AS
