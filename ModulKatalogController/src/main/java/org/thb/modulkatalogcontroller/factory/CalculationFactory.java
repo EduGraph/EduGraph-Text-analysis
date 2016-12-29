@@ -5,6 +5,11 @@ import java.io.IOException;
 
 import org.thb.modulkatalogcontroller.ICalculationService;
 
+/**
+ * The CalculationFactory returns the specific service depends on the profileid.
+ * @author ManuelRaddatz
+ *
+ */
 public class CalculationFactory
 {
 	
