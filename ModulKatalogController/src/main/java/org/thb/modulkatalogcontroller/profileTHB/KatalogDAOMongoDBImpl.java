@@ -24,6 +24,13 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		private MongoDatabase db;
 		private MongoCollection<Document> dbCollection;
 	
+		/**
+		 * Public Constructor with the given Information for initializing the MongoClient
+		 * @param databaseServer
+		 * @param databasePort
+		 * @param databaseName
+		 * @param databaseCollectionName
+		 */
 		public KatalogDAOMongoDBImpl(String databaseServer, Integer databasePort, String databaseName,
 				String databaseCollectionName){
 			
@@ -32,6 +39,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			this.dbCollection = db.getCollection(databaseCollectionName);
 		}
 		
+		/**
+		 * The instance method returning an Instance of the object 
+		 */
 		@Override
 		public IKatalogDAO instance(String databaseServer, Integer databasePort, String databaseName,
 				String databaseCollectionName) {
@@ -52,6 +62,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			return katalogs;
 		}
 
+		/**
+		 * Returning the saved Katalog as Object. Actually it is saved as JSON.
+		 */
 		@Override
 		public Object getKatalogByName(String katalogName)
 		{
@@ -66,6 +79,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			
 		}
 
+		/**
+		 * Delete the Katalog with the corresponding document from filesystem.
+		 */
 		@Override
 		public void deleteKatalog(Katalog katalog)
 		{
@@ -73,6 +89,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			
 		}
 
+		/**
+		 * Adding the given Katalog to the Database. Not all Information are saved.
+		 */
 		@Override
 		public void addKatalog(Katalog katalog)
 		{

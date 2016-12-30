@@ -222,6 +222,7 @@ public class ControlFormController implements Serializable
 		{
 			file = Files.createTempFile(folder, filename + "-", "." + extension);
 			input = katalogFile.getInputstream();	
+			//The final Copy Operation should be done after committing the katalog to the database 
 			Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
 			System.out.println("Uploaded file successfully saved in " + file);
 		} catch (IOException e)
