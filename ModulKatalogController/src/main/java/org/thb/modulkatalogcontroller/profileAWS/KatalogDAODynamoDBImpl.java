@@ -5,6 +5,11 @@ import java.util.List;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
 
+/**
+ * The aws profile uses a DynamoDB as persistence layer. DynamoDB is similar to MongoDB. It ist a document oriented DB.
+ * @author ManuelRaddatz
+ *
+ */
 public class KatalogDAODynamoDBImpl implements IKatalogDAO
 {
 
