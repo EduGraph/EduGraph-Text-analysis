@@ -37,7 +37,7 @@ public class SolrConnection implements Serializable
 	 * @throws IOException
 	 * @throws SolrServerException
 	 */
-	public SolrConnection() throws IOException, SolrServerException
+	public SolrConnection()
 	{
 		super();	
 	}
@@ -106,24 +106,27 @@ public class SolrConnection implements Serializable
 	public void indexing(List<Modul> moduls) throws SolrServerException, IOException{	
 		
 		solrClient = new HttpSolrClient(ApplicationProperties.getInstance().getApplicationProperty((ApplicationPropertiesKeys.SOLRURLSTRING)));
-		int xx = 0;
 		for(Modul x : moduls){
 			SolrInputDocument input = new SolrInputDocument();		
 			if(x.getCleanText()!=null & x.getUniversityName()!=null & x.getModulName()!=null){
 				input.setField("id",x.getUniversityName()+x.getModulName());
 				input.setField("content", x.getCleanText());
-				UpdateResponse updateResponse = solrClient.add(input);
-				xx++;
+				UpdateResponse updateResponse = solrClient.add(input);;
 				solrClient.commit();
 				NamedList<?> header = updateResponse.getResponseHeader();
+				
 				for(int i=0; i<header.size(); i++){
-					System.out.println(header.getName(i)+" - "+header.getVal(i));
+					if(header.getName(i).equals("status")){
+						if(header.getVal(i)!= Integer.valueOf(0)){
+							System.out.println("Error while indexing Modul: "+x.getUniversityName()+"-"+x.getModulName());
+						}
+					}	
 				}
+				
 			}else{
 				System.out.println("No INDEX!");
 			}
 		}
-		System.out.println("Indexed Moduls: "+xx);
 		solrClient.close();
 	}
 	
@@ -196,9 +199,19 @@ public class SolrConnection implements Serializable
 	 * If the result is unsatisfied, it has to be possible to delete the indexed moduls.
 	 * IT I STILL TODO
 	 * @throws IOException
+	 * @throws SolrServerException 
 	 */
-	public void deleteIndex() throws IOException{	
+	public void deleteIndex(List<Modul> moduls) throws IOException, SolrServerException{	
 		solrClient = new HttpSolrClient(ApplicationProperties.getInstance().getApplicationProperty((ApplicationPropertiesKeys.SOLRURLSTRING)));	
+		List<String> ids = new ArrayList<>();
+		for(Modul m : moduls){
+			String id = m.getUniversityName()+m.getModulName();
+			ids.add(id);
+		}
+		UpdateResponse updateResponse = solrClient.deleteById(ids, 1000);
+		if(updateResponse.getStatus()!=0){
+			System.out.println("Error deleting Index for University:"+updateResponse.getStatus());
+		}
 		solrClient.close();
 	}
 

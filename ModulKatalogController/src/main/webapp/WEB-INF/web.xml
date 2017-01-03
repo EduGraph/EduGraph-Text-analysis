@@ -24,13 +24,13 @@
   </servlet-mapping>
   <error-page>
     <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-    <location>/faces/controlForm.xhtml</location>
+    <location>/faces/index.xhtml</location>
   </error-page>
   <session-config>
     <session-timeout>30</session-timeout>
   </session-config>
   <welcome-file-list>
-    <welcome-file>/faces/controlForm.xhtml</welcome-file>
+    <welcome-file>/faces/index.xhtml</welcome-file>
   </welcome-file-list>
   <mime-mapping>
     <extension>png</extension>

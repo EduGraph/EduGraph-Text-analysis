@@ -8,9 +8,10 @@ package org.thb.modulkatalogcontroller;
  */
 public class Pages
 {
-	public final static String CONTROLFORM = "controlForm";
-	public final static String DOCUMENTCONFIRM = "docConfirmation";
-	public final static String PARTSEXTRACTION = "docParts";
+	public final static String CONTROLFORM = "controlForm?faces-redirect=true";
+	public final static String DOCUMENTCONFIRM = "docConfirmation?faces-redirect=true";
+	public final static String VIEWPAGE = "viewCatalog?faces-redirect=trues";
 	public final static String CLEANMODUL = "cleanModul";
-	public final static String INDEX = "index";
+	public final static String INDEX = "index?faces-redirect=true";
+	
 }

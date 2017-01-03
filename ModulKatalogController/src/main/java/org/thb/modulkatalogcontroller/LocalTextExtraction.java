@@ -1,8 +1,6 @@
 package org.thb.modulkatalogcontroller;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -18,13 +16,11 @@ public class LocalTextExtraction implements IKatalogTextExtract
 {
 	
 	@Override
-	public String extractKatalogText(File file, Map<String, Integer> controls) throws IOException
+	public String extractKatalogText(byte[] b, Map<String, Integer> controls) throws IOException
 	{
-		System.out.println("PDF: " + Files.probeContentType(file.toPath()));
-		System.out.println("DOC: " + Files.probeContentType(file.toPath()));
 		
 		PDDocument pdf = null;
-		pdf = PDDocument.load(file);
+		pdf = PDDocument.load(b);
 
 		PDFTextStripper stripper = null;
 		stripper = new PDFTextStripper();
@@ -35,7 +31,7 @@ public class LocalTextExtraction implements IKatalogTextExtract
 		stripper.setEndPage(controls.get("Endseite"));
 		
 		String result = stripper.getText(pdf);
-		
+		pdf.close();
 		return result;
 	}
 }

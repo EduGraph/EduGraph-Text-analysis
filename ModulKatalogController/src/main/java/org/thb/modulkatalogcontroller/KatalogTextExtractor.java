@@ -1,6 +1,5 @@
 package org.thb.modulkatalogcontroller;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class KatalogTextExtractor {
 	private SolrConnection solrConnect;
 	private List<Vector> keyClassVectors;
 	private List<ControlFormItems> controlItems;
-	private String file;
+	private byte[] b; 
 
 	/**
 	 * Contructor for Textextraction
@@ -45,8 +44,10 @@ public class KatalogTextExtractor {
 	 * @throws IOException
 	 * @throws SolrServerException
 	 */
-	public KatalogTextExtractor(Katalog katalog, List<Modul> moduls) throws IOException, SolrServerException {
+	public KatalogTextExtractor(Katalog katalog, List<Modul> moduls, byte[] fileContent) throws IOException, SolrServerException {
 		super();
+		this.b=fileContent;
+		System.out.println("BYTEARRAY in CONSTRUCTOR: "+fileContent.toString());
 		this.katalog = katalog;
 		this.moduls=moduls;
 		init();
@@ -62,7 +63,6 @@ public class KatalogTextExtractor {
 		solrConnect = new SolrConnection();
 		keyClassVectors=solrConnect.setUpKeyVectors();
 		controlItems = katalog.getControlItems();
-		file=katalog.getFile();
 	}
 
 	public Katalog getKatalog() {
@@ -83,11 +83,13 @@ public class KatalogTextExtractor {
 	public void extractModultext() throws IOException, SolrServerException  //String inputFile //array<String>
 	{
 		ArrayList<Integer> modulStarts = new ArrayList<>();
-		File f = new File(file);
+		
+		ArrayList<String> tempList = new ArrayList<>();
 		
 		Map<String, Integer> controls = new HashMap<>();
-		String universityName =null;
-		String regexPatternString =null;
+		String universityName = null;
+		String regexPatternStringModulKennung = null;
+		String regexPatternStringModulZuordnung = null;
 		
 		for (ControlFormItems item : controlItems)
 		{
@@ -97,27 +99,27 @@ public class KatalogTextExtractor {
 				{
 					controls.put(FormFieldNames.STARTSEITE, Integer.parseInt(item.getFieldValue()));
 				} else if (item.getFieldname().equals(FormFieldNames.ENDSEITE)){
-					//stripper.setEndPage(Integer.parseInt(item.getFieldValue()));
 					controls.put(FormFieldNames.ENDSEITE, Integer.parseInt(item.getFieldValue()));
 				}else if(item.getFieldname().equals(FormFieldNames.MODULERKENNUNG)){
-					regexPatternString = item.getFieldValue();
+					regexPatternStringModulKennung = item.getFieldValue();
 				}else if(item.getFieldname().equals(FormFieldNames.HOCHSCHULNAME)){
 					universityName = item.getFieldValue();
+				}else if(item.getFieldname().equals(FormFieldNames.ZUORDNUNG)){
+					if(item.getFieldValue()!=null){
+						regexPatternStringModulZuordnung = item.getFieldValue();
+					}
 				}
 			}
 		}
 
-		/**
-		 * Depending on the environment, the specific textextractor is loaded.
-		 */
 		IKatalogTextExtract iText = TextExtractorFactory.getTextExtractor(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.PROFILEID));
 		
-		String pageText = iText.extractKatalogText(f, controls);
+		String pageText = iText.extractKatalogText(b, controls);
 		
 		String trim = pageText.replaceAll("\\r\\n|\\r|\\n", " ");
 		String clearText = trim.replaceAll("\\s+", " ");
 		
-		Pattern pattern = Pattern.compile(regexPatternString);
+		Pattern pattern = Pattern.compile(regexPatternStringModulKennung);
 		Matcher matcher = pattern.matcher(clearText);
 
 		String modul = null;
@@ -129,26 +131,41 @@ public class KatalogTextExtractor {
 		{
 			if (i + 1 >= modulStarts.size())
 			{
-				modul = clearText.substring(modulStarts.get(i), clearText.length()).replaceAll(regexPatternString, "");
+				modul = clearText.substring(modulStarts.get(i), clearText.length());//.replaceAll(regexPatternStringModulKennung, "");
 			} else
 			{
-				modul = clearText.substring(modulStarts.get(i), modulStarts.get(i + 1)).replaceAll(regexPatternString,"");
+				modul = clearText.substring(modulStarts.get(i), modulStarts.get(i + 1));//.replaceAll(regexPatternStringModulKennung,"");
 			}
 			Modul m = new Modul();
 			m.setUniversityName(universityName);
 			m.setText(modul);
 			m.setCleanText(modul);
-			m.setModulName(modul.substring(0, 35).replaceAll("\\p{Punct}", ""));
-			//m.setVector(vector);
-			Integer ects = Integer.parseInt(getECTS(extractParts(m)));
+			tempList.add(modul);
+			m.setModulName(modul.substring(0, 20).replaceAll("\\p{Punct}", ""));
+			
+			Integer ects;
+			try{
+				ects= Integer.parseInt(getECTS(extractParts(m)));
+			}catch(NumberFormatException n){
+				System.out.println("Keine ECTS erkannt: "+m.getModulName());
+				ects = 0;
+			}
 			m.setEcts(ects);
-			System.out.println("HIER STEHT DIE ZUORDNUNG: "+getZuordnung(extractParts(m)));
-			moduls.add(m);
+			
+			if(regexPatternStringModulZuordnung!=null){
+				Pattern patternZuordnung = Pattern.compile(regexPatternStringModulZuordnung);
+				Matcher matcherZuordnung = patternZuordnung.matcher(modul);
+				if(matcherZuordnung.find()){
+					moduls.add(m);
+				}
+			}
+
 		}
+		
 		if(indexingModuls(moduls)){
 			getModulIndex(moduls);
 		}
-		compareVectors();
+		compareVectors();		
 	}
 	
 	/**
@@ -261,33 +278,6 @@ public class KatalogTextExtractor {
 			if (controlItems.get(j).getFieldValue() != null)
 			{
 				part = new ModulPart();
-				/*
-				if (controlItems.get(j).getFieldname().equals(FormFieldNames.INDIKATOR_INHALT))
-				{
-					part.setStartIndex(pStart(controlItems.get(j), modulText));
-					part.setEndIndex(pEnd(controlItems.get(j), modulText));
-					part.setPart(controlItems.get(j).getFieldname());
-					part.setValue(controlItems.get(j).getFieldValue());
-				} else if (controlItems.get(j).getFieldname().equals(FormFieldNames.INDIKATOR_ERGEBNIS))
-				{
-					part.setStartIndex(pStart(controlItems.get(j), modulText));
-					part.setEndIndex(pEnd(controlItems.get(j), modulText));
-					part.setPart(controlItems.get(j).getFieldname());
-					part.setValue(controlItems.get(j).getFieldValue());
-				} else if (controlItems.get(j).getFieldname().equals(FormFieldNames.INDIKATOR_LITERATUR))
-				{
-					part.setStartIndex(pStart(controlItems.get(j), modulText));
-					part.setEndIndex(pEnd(controlItems.get(j), modulText));
-					part.setPart(controlItems.get(j).getFieldname());
-					part.setValue(controlItems.get(j).getFieldValue());
-				} else if (controlItems.get(j).getFieldname().equals(FormFieldNames.INDIKATOR_ECTS))
-				{
-					part.setStartIndex(pStart(controlItems.get(j), modulText));
-					part.setEndIndex(pEnd(controlItems.get(j), modulText));
-					part.setPart(controlItems.get(j).getFieldname());
-					part.setValue(controlItems.get(j).getFieldValue());
-				}
-				*/
 				
 				if (controlItems.get(j).getFieldname().equals(FormFieldNames.INDIKATOR_ECTS))
 				{
@@ -365,26 +355,12 @@ public class KatalogTextExtractor {
 				result = p.getText();
 			}
 		}
-		return result;
-	}
-	
-	/**
-	 * Getting the Param if the modul belongs to the studies of wirschaftsinformatik. this param ist optional in the controlForm.
-	 * @param parts
-	 * @return
-	 */
-	private String getZuordnung(List<ModulPart> parts){
-		
-		String result = null;
-		
-		for(ModulPart p : parts){
-			if(p.getPart().equals(FormFieldNames.ZUORDNUNG)){
-				result = p.getText();
-			}
+		if (result == null || result.isEmpty()){
+			result="0";
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Helper Method for getting the Startindex of the Regex in the Modultext
 	 * @param item

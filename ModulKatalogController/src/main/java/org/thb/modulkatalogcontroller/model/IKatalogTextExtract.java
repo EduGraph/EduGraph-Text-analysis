@@ -1,6 +1,5 @@
 package org.thb.modulkatalogcontroller.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -13,5 +12,5 @@ import java.util.Map;
 public interface IKatalogTextExtract
 {
 
-	public String extractKatalogText(File file, Map<String, Integer> controls)throws IOException;
+	public String extractKatalogText(byte[] b, Map<String, Integer> controls)throws IOException;
 }

@@ -20,6 +20,11 @@
 			<div id="navigationwrap">
 				<div id="navigation">
 					<p:panelGrid style="height:40px;">
+						<h:form id="myIndexForm">
+							<p:commandButton action="#{indexPageController.goToCreationPage()}" value="Katalog hinzufügen" icon="ui-icon-document" style="font-size:120%;"/> 
+							<p:commandButton action="#{indexPageController.goToViewPage()}" value="Kataloge anzeigen" icon="ui-icon-clipboard" style="font-size:120%;"/>
+						</h:form>
+
 					</p:panelGrid>
 				</div>
 			</div>

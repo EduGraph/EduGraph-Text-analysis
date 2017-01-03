@@ -1,15 +1,12 @@
 package org.thb.modulkatalogcontroller;
 
 import java.io.IOException;
-import java.io.InputStream;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,44 +207,39 @@ public class ControlFormController implements Serializable
 	 * @throws IOException
 	 * @throws SolrServerException
 	 */
-	public String save(){
+	public String save() throws IOException, SolrServerException{
 
-		InputStream input= null;
-		Path file = null;
-		Path folder = Paths.get(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.UPLOADDIRECTORY));
-		String filename = FilenameUtils.getBaseName(katalogFile.getFileName()); 
+		byte[] fileContent = null;
+		
 		String extension = FilenameUtils.getExtension(katalogFile.getFileName());
+			
+		String filename =FilenameUtils.getBaseName(katalogFile.getFileName());
 		
-		try
-		{
-			file = Files.createTempFile(folder, filename + "-", "." + extension);
-			input = katalogFile.getInputstream();	
-			//The final Copy Operation should be done after committing the katalog to the database 
-			Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-			System.out.println("Uploaded file successfully saved in " + file);
-		} catch (IOException e)
-		{
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while reading InputFile. Please try again.",e.getLocalizedMessage()));
-			return "";
-		}
+		Path folder = Paths.get(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.UPLOADDIRECTORY));
+				
+		Path file = Files.createTempFile(folder, filename + "-", "." + extension);
+		
+		katalog.setFilePath(file);
 
-		try
-		{
-			input.close();
-		} catch (IOException e)
-		{
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while closing the inputstream for the katalogfile. Please try again.",e.getLocalizedMessage()));
-			return "";
-		}
+		fileContent = katalogFile.getContents();
 		
-		katalog.setFile(file.toString());
+		katalog.setFileContent(fileContent);
+		 
+		for (ControlFormItems item : katalog.getControlItems())
+		{
+			if(item.getFieldname().equals(FormFieldNames.KATALOGDATEI)){
+				System.out.println(katalogFile.getFileName());
+				item.setFieldValue(katalogFile.getFileName());
+			}
+		} 
+		 
 		katalog.setModuls(moduls);
 		
 		KatalogTextExtractor katalogExtractor;
+
 		try
-		{
-			System.out.println("Savemethode: "+katalog.getControlItems().size());
-			katalogExtractor = new KatalogTextExtractor(katalog, moduls);
+		{		
+			katalogExtractor = new KatalogTextExtractor(katalog, moduls, fileContent);
 			katalogExtractor.extractModultext();
 		} catch (IOException e)
 		{

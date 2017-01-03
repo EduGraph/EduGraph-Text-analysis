@@ -31,6 +31,7 @@
 			<div id="contentwrap">
 				<div id="content">
 					<h:form>
+					<p:messages globalOnly="true" autoUpdate="true"/>
 						<p:dataTable id="tblItems2" var="katalog" value="#{controlFormController.katalog.controlItems}" style="width:1250px;">
 							<f:facet name="header">Bestätigung</f:facet>
 							<p:column headerText="Eigenschaft" style="widht:300px;">
@@ -41,11 +42,12 @@
 									rendered="#{katalog.type=='STRING'}" />
 								<p:outputLabel value="#{katalog.fieldValue}"
 									rendered="#{katalog.type=='NUMBER'}" />
-								<p:outputLabel value="#{katalog.file.absolutePath}"
+								<p:outputLabel value="#{katalog.fieldValue}"
 									rendered="#{katalog.type=='FILE'}" />
 							</p:column>
 							<f:facet name="footer">
-								<p:commandButton value="Katalog in DB speichern with controllerinvoke" action="#{saveFormController.save(controlFormController.katalog)}"/>
+								<p:commandButton value="Katalog in DB speichern" action="#{saveFormController.save(controlFormController.katalog)}"/>
+								<p:commandButton value="Analyse wiederholen" action="#{saveFormController.nextTry(controlFormController.katalog)}"/>
 							</f:facet>
 						</p:dataTable>
 						<br />

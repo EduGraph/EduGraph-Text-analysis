@@ -1,5 +1,6 @@
 package org.thb.modulkatalogcontroller.profileTHB;
 
+import org.thb.modulkatalogcontroller.DaoReturn;
 import org.thb.modulkatalogcontroller.model.ControlFormItems;
 import org.thb.modulkatalogcontroller.model.FormFieldNames;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
@@ -15,6 +16,9 @@ import com.mongodb.client.MongoDatabase;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.bson.*;
 
@@ -73,9 +77,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		}
 
 		@Override
-		public void updateKatalog(Katalog katalog)
+		public String updateKatalog(Katalog katalog)
 		{
-			// TODO Auto-generated method stub
+			return DaoReturn.OK;
 			
 		}
 
@@ -83,9 +87,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		 * Delete the Katalog with the corresponding document from filesystem.
 		 */
 		@Override
-		public void deleteKatalog(Katalog katalog)
+		public String deleteKatalog(Katalog katalog)
 		{
-			// TODO Auto-generated method stub
+			return DaoReturn.OK;
 			
 		}
 
@@ -93,14 +97,22 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		 * Adding the given Katalog to the Database. Not all Information are saved.
 		 */
 		@Override
-		public void addKatalog(Katalog katalog)
+		public String addKatalog(Katalog katalog)
 		{
 			
 			Document basicObject = new Document();
 			
+			FindIterable<Document> cursor = dbCollection.find();
+			
 			for (ControlFormItems item : katalog.getControlItems()) {
 				if (item.getFieldname().equals(FormFieldNames.HOCHSCHULNAME)) {
-					basicObject.put("id", item.getFieldValue());
+					for(Document d :cursor){
+						if(d.getString("hochschulname").equalsIgnoreCase(item.getFieldValue())){
+							System.out.println("Hochschule in db vorhanden");
+							return DaoReturn.KATALOGinDATABASE;
+						}
+					}
+					basicObject.put("_id", item.getFieldValue());
 					basicObject.put("hochschulname", item.getFieldValue());
 					basicObject.put("date", Calendar.getInstance().getTime().toString());
 				}
@@ -130,6 +142,8 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			basicObject.append("moduls", moduls);
 
 			dbCollection.insertOne(basicObject);
+			
+			return DaoReturn.OK;
 		}
 	}
 	

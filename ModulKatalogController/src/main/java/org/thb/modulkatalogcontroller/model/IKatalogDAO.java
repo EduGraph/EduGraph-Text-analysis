@@ -15,10 +15,10 @@ public interface IKatalogDAO
 	
 	public Object getKatalogByName(String katalogName);
 	
-	public void updateKatalog(Katalog katalog);
+	public String updateKatalog(Katalog katalog);
 	
-	public void deleteKatalog(Katalog katalog);
+	public String deleteKatalog(Katalog katalog);
 	
-	public void addKatalog(Katalog katalog);
+	public String addKatalog(Katalog katalog);
 
 }

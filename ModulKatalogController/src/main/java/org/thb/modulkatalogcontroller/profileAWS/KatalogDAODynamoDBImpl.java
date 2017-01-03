@@ -2,6 +2,7 @@ package org.thb.modulkatalogcontroller.profileAWS;
 
 import java.util.List;
 
+import org.thb.modulkatalogcontroller.DaoReturn;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
 
@@ -26,43 +27,37 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 	public IKatalogDAO instance(String databaseServer, Integer databasePort, String databaseName,
 			String databaseCollectionName)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<Object> getAllKatalogs()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object getKatalogByName(String katalogName)
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void updateKatalog(Katalog katalog)
+	public String updateKatalog(Katalog katalog)
 	{
-		// TODO Auto-generated method stub
-		
+		return DaoReturn.OK;
 	}
 
 	@Override
-	public void deleteKatalog(Katalog katalog)
+	public String deleteKatalog(Katalog katalog)
 	{
-		// TODO Auto-generated method stub
-		
+		return DaoReturn.OK;
 	}
 
 	@Override
-	public void addKatalog(Katalog katalog)
+	public String addKatalog(Katalog katalog)
 	{
-		// TODO Auto-generated method stub
-		
+		return DaoReturn.OK;
 	}
 
 }
