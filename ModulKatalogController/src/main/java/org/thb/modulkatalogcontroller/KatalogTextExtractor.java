@@ -65,10 +65,18 @@ public class KatalogTextExtractor {
 		controlItems = katalog.getControlItems();
 	}
 
+	/**
+	 * Returning the actual Katalog
+	 * @return Katalog
+	 */
 	public Katalog getKatalog() {
 		return katalog;
 	}
 
+	/**
+	 * Settting the Katalog
+	 * @param katalog
+	 */
 	public void setKatalog(Katalog katalog) {
 		this.katalog = katalog;
 	}
@@ -83,8 +91,6 @@ public class KatalogTextExtractor {
 	public void extractModultext() throws IOException, SolrServerException  //String inputFile //array<String>
 	{
 		ArrayList<Integer> modulStarts = new ArrayList<>();
-		
-		ArrayList<String> tempList = new ArrayList<>();
 		
 		Map<String, Integer> controls = new HashMap<>();
 		String universityName = null;
@@ -140,8 +146,7 @@ public class KatalogTextExtractor {
 			m.setUniversityName(universityName);
 			m.setText(modul);
 			m.setCleanText(modul);
-			tempList.add(modul);
-			m.setModulName(modul.substring(0, 20).replaceAll("\\p{Punct}", ""));
+			m.setModulName(modul.substring(0, 35).replaceAll("\\p{Punct}", ""));
 			
 			Integer ects;
 			try{
@@ -285,7 +290,6 @@ public class KatalogTextExtractor {
 					part.setEndIndex(pEnd(controlItems.get(j), modulText));
 					part.setPart(controlItems.get(j).getFieldname());
 					part.setValue(controlItems.get(j).getFieldValue());
-					
 				}else if (controlItems.get(j).getFieldname().equals(FormFieldNames.ZUORDNUNG))
 					part.setStartIndex(pStart(controlItems.get(j), modulText));
 					part.setEndIndex(pEnd(controlItems.get(j), modulText));
@@ -317,7 +321,14 @@ public class KatalogTextExtractor {
 			if (modulPart.getPart().equals(FormFieldNames.INDIKATOR_ECTS))
 			{
 				StringBuilder sb = new StringBuilder();
+				
 				char[] c = modulText.substring(modulPart.getStartIndex(), modulPart.getEndIndex()).toCharArray();
+				
+				for(char x : c){
+					System.out.print(x);
+				}
+				System.out.println("RUNNING ECTS EXTRACTION..............");
+				
 				for (int j = 0; j < c.length; j++)
 				{
 					if (Character.isDigit(c[j]))
@@ -326,6 +337,7 @@ public class KatalogTextExtractor {
 					}
 				}
 				modulPart.setText(sb.toString());
+				
 			} else
 			{
 				String text = null;
@@ -371,11 +383,16 @@ public class KatalogTextExtractor {
 	{
 		Pattern p = Pattern.compile(item.getFieldValue());
 		Matcher m = p.matcher(modulText);
-
+		int count = 0;
 		int start = 0;
 		while (m.find())
 		{
 			start = m.start();
+			count++;
+			if(item.getFieldname().equals(FormFieldNames.INDIKATOR_ECTS)&&count !=0){
+				System.out.println("PATTERN-start-Ects: "+start);
+				return start;
+			}
 		}
 		return start;
 	}
@@ -390,11 +407,16 @@ public class KatalogTextExtractor {
 	{
 		Pattern p = Pattern.compile(item.getFieldValue());
 		Matcher m = p.matcher(modulText);
-
+		int count = 0;
 		int end = 0;
 		while (m.find())
 		{
 			end = m.end();
+			count++;
+			if(item.getFieldname().equals(FormFieldNames.INDIKATOR_ECTS)&&count!=0){
+				System.out.println("PATTERN-end-Ects: "+end);
+				return end;
+			}
 		}
 		return end;
 	}

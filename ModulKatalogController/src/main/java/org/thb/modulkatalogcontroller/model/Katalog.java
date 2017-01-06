@@ -18,9 +18,14 @@ public class Katalog implements Serializable
 	private Path filePath;
 	
 	private byte[] fileContent;
+	
+	private List<ControlFormItems> controlItems;
+	
+	private List<Modul> moduls;
 
 	/**
-	 * @return the fileContent
+	 * Returning the content of the given Katalogfile.
+	 * @return byte[]
 	 */
 	public byte[] getFileContent()
 	{
@@ -28,7 +33,8 @@ public class Katalog implements Serializable
 	}
 
 	/**
-	 * @param fileContent the fileContent to set
+	 * Setting the filecontent of the Katalogobject.
+	 * @param fileContent
 	 */
 	public void setFileContent(byte[] fileContent)
 	{
@@ -36,7 +42,8 @@ public class Katalog implements Serializable
 	}
 
 	/**
-	 * @return the filePath
+	 * Returning the Filepath of the 
+	 * @return Path
 	 */
 	public Path getFilePath()
 	{
@@ -50,37 +57,47 @@ public class Katalog implements Serializable
 	{
 		this.filePath = filePath;
 	}
-
-	/*
-	 * TODO: Maybe change to Map to avoid looping
-	 */
-	private List<ControlFormItems> controlItems;
-
-	private List<Modul> moduls;
 	
 	/**
-	 * Constructor of the Katalog Class. During Instantiation an empty List of Moduls the SolrConnection and the keyClassVectors are
+	 * Constructor of the Katalog Class. During Instantiation an empty List of Moduls the SolrConnection 
+	 * and the keyClassVectors are
 	 * initialized. 
 	 */
 	public Katalog(){
 		moduls = new ArrayList<>();
 	}
 
+	/**
+	 * Returning the List of the controlFormItems
+	 * @return List
+	 */
 	public List<ControlFormItems> getControlItems()
 	{
 		return controlItems;
 	}
 
+	/**
+	 * Setting the List of controlFormItems
+	 * @param controlItems
+	 */
 	public void setControlItems(List<ControlFormItems> controlItems)
 	{
 		this.controlItems = controlItems;
 	}
 
+	/**
+	 * Returning all Moduls of the Katalog
+	 * @return List<Modul>
+	 */
 	public List<Modul> getModuls()
 	{
 		return moduls;
 	}
 
+	/**
+	 * Setting the List of all Moduls
+	 * @param moduls List
+	 */
 	public void setModuls(List<Modul> moduls)
 	{
 		this.moduls = moduls;

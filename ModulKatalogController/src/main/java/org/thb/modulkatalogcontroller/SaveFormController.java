@@ -22,7 +22,6 @@ import org.thb.modulkatalogcontroller.solr.SolrConnection;
 
 /**
  * This Controller is responsible saving the modulcatalog in the given database.
- * 
  * @author Manuel Raddatz
  *
  */
@@ -49,6 +48,12 @@ public class SaveFormController implements Serializable
 		solrConnect = new SolrConnection();
 	}
 
+	/**
+	 * The save method putting the file to the upload directory and the contents to the Database. After action the page
+	 * return is the index page.
+	 * @param katalog
+	 * @return String
+	 */
 	public String save(Katalog katalog)
 	{
 
@@ -78,15 +83,16 @@ public class SaveFormController implements Serializable
 		saveCatalogToUploadDirectory(katalog);
 
 		nextTry(katalog);
-
+		
+		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+		
 		return Pages.INDEX;
 	}
 
 	/**
 	 * The nextry deletes the solr index for the given catalog for avoiding
 	 * errors in getting the right documents for analyzing the catalog.
-	 * 
-	 * @return
+	 * @return String
 	 * @throws SolrServerException
 	 * @throws IOException
 	 */
@@ -107,15 +113,17 @@ public class SaveFormController implements Serializable
 					"IOException deleting index and deleting tempFile", e.getLocalizedMessage()));
 			return "";
 		}
+		
+		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+		
 		return Pages.INDEX;
 	}
 
 	/**
 	 * Saving the Katalogfile to the given uploaddirectory from the properties
 	 * file.
-	 * 
 	 * @param katalog
-	 * @return
+	 * @return boolean
 	 */
 	private boolean saveCatalogToUploadDirectory(Katalog katalog)
 	{
@@ -138,6 +146,13 @@ public class SaveFormController implements Serializable
 		return true;
 	}
 
+	/**
+	 * During reading and uploading the catalogfile, a temporary File is created and before trying a next attempt, the file
+	 * is deleted.
+	 * @param path
+	 * @return boolean
+	 * @throws IOException
+	 */
 	private boolean deleteTempFile(Path path) throws IOException{
 		
 		Files.delete(path);

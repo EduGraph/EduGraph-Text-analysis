@@ -62,14 +62,14 @@
 		<version.mongodb>3.4.0</version.mongodb>
 	</properties>
 
-    <repositories>
-        <repository>
-            <id>prime-repo</id>
-            <name>PrimeFaces Maven Repository</name>
-            <url>http://repository.primefaces.org</url>
-        </repository>
-    </repositories>
-    
+	<repositories>
+		<repository>
+			<id>prime-repo</id>
+			<name>PrimeFaces Maven Repository</name>
+			<url>http://repository.primefaces.org</url>
+		</repository>
+	</repositories>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -186,6 +186,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.wildfly.arquillian</groupId>
+			<artifactId>wildfly-arquillian-container-managed</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- From here, Starting the dependency for Application -->
 		<dependency>
 			<groupId>org.primefaces</groupId>
@@ -274,14 +280,6 @@
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
 				</plugin>
-				<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
-					<version>${version.wildfly.maven.plugin}</version> </plugin> -->
-				<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-resources-plugin</artifactId> 
-					<version>${version.plugin.resources}</version> <executions> <execution> <id>copy-standalone-xml</id> 
-					<phase>generate-test-sources</phase> <goals> <goal>copy-resources</goal> 
-					</goals> <configuration> <outputDirectory>${env.JBOSS_HOME}/standalone/configuration</outputDirectory> 
-					<resources> <resource> <directory>src/main/resources/jboss</directory> </resource> 
-					</resources> </configuration> </execution> </executions> </plugin> -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>

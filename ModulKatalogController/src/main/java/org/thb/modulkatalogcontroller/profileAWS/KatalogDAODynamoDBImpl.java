@@ -60,4 +60,13 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 		return DaoReturn.OK;
 	}
 
+
+
+	@Override
+	public String getAllNormalizedScores(String pillar)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

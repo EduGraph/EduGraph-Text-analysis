@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
 import org.bson.*;
 
 public class KatalogDAOMongoDBImpl implements IKatalogDAO
@@ -58,8 +55,10 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		{
 			List<Object> katalogs = new ArrayList<>();
 			 FindIterable<Document> cursor = dbCollection.find();
+			
 			    for (Document document : cursor)
 				{				
+			    	System.out.println("Document from DB: "+document.getString("hochschulname"));
 			    	katalogs.add(document.getString("hochschulname"));
 				}
 			
@@ -72,7 +71,6 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		@Override
 		public Object getKatalogByName(String katalogName)
 		{
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -114,6 +112,7 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 					}
 					basicObject.put("_id", item.getFieldValue());
 					basicObject.put("hochschulname", item.getFieldValue());
+					basicObject.put("katalogfile", katalog.getFilePath().toString());
 					basicObject.put("date", Calendar.getInstance().getTime().toString());
 				}
 			}
@@ -121,7 +120,7 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			ArrayList<BasicDBObject> moduls = new ArrayList<>();
 			for (Modul m : katalog.getModuls()) {
 				BasicDBObject detailObject = new BasicDBObject();
-				detailObject.append("id", m.getModulName());
+				detailObject.append("modulname", m.getModulName());
 				detailObject.append("ects", m.getEcts());
 				detailObject.append("bwlScore", m.getBwlScore());
 				detailObject.append("infScore", m.getInfScore());
@@ -129,7 +128,9 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 				detailObject.append("bwlScoreNormalized", m.getBwlScoreNormalized());
 				detailObject.append("infScoreNormalized", m.getInfScoreNormalized());
 				detailObject.append("wiScoreNormalized", m.getWiScoreNormalized());
+				detailObject.append("nnScoreNormalized", m.getNnScoreNormalized());
 				
+				/*
 				ArrayList<BasicDBObject>vector = new ArrayList<>();
 				for (org.thb.modulkatalogcontroller.model.Term t : m.getDocumentVector().getTerms()) {
 					BasicDBObject vectorObject = new BasicDBObject();
@@ -137,6 +138,8 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 					vector.add(vectorObject);
 				}
 				detailObject.append("vector", vector);
+				*/
+				
 				moduls.add(detailObject);	
 			}
 			basicObject.append("moduls", moduls);
@@ -144,6 +147,15 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 			dbCollection.insertOne(basicObject);
 			
 			return DaoReturn.OK;
+		}
+		
+		/**
+		 * Returning the needed Information for building the pillar 
+		 */
+		@Override
+		public String getAllNormalizedScores(String id)
+		{
+			return null;
 		}
 	}
 	

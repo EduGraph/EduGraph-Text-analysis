@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 import org.thb.modulkatalogcontroller.model.Modul;
 import org.thb.modulkatalogcontroller.profileTHB.CalculationServiceImpl;
 
-public class CalculationTest
+public class CalculationTestUT
 {
 	
 	private static Modul modul;

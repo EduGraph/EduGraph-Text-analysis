@@ -33,6 +33,12 @@ public class SolrConnection implements Serializable
 	private SolrQuery solrQuery;
 	
 	/**
+	 * These to String and the corresponding Constructor is only for integration testing.
+	 */
+	private String solrUrl;
+	private String keyClassUrl;
+	
+	/**
 	 * Constructor of SolrConnection with init-Method
 	 * @throws IOException
 	 * @throws SolrServerException
@@ -41,6 +47,28 @@ public class SolrConnection implements Serializable
 	{
 		super();	
 	}
+	
+	
+
+	public SolrConnection(String solrUrl, String keyClassUrl)
+	{
+		super();
+		this.solrUrl = solrUrl;
+		this.keyClassUrl = keyClassUrl;
+		
+		solrClient = new HttpSolrClient(keyClassUrl);
+	}
+	
+	/**
+	 * Returning the SolrClient for integration testing
+	 * @return the solrClient
+	 */
+	public SolrClient getSolrClient()
+	{
+		return solrClient;
+	}
+
+
 
 	/**
 	 * This Methods provides the 4 Vectors of the indexed Key-Classes. 

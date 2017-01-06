@@ -20,5 +20,7 @@ public interface IKatalogDAO
 	public String deleteKatalog(Katalog katalog);
 	
 	public String addKatalog(Katalog katalog);
+	
+	public String getAllNormalizedScores(String pillar);
 
 }
