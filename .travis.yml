@@ -1,4 +1,4 @@
 language: java
 sudo: false
 script:
-  - /ModulKatalogController mvn clean verify
+  - ModulKatalogController mvn clean verify
