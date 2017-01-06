@@ -15,6 +15,9 @@ import org.thb.modulkatalogcontroller.model.IKatalogTextExtract;
 public class LocalTextExtraction implements IKatalogTextExtract
 {
 	
+	/**
+	 * Extracting Text from Given PDF
+	 */
 	@Override
 	public String extractKatalogText(byte[] b, Map<String, Integer> controls) throws IOException
 	{
