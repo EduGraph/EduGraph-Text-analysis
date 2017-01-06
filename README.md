@@ -1,5 +1,7 @@
 # EduGraph-Text-analysis
 
+[![Build Status](https://travis-ci.org/EduGraph/EduGraph-Text-analysis.svg?branch=master)](https://travis-ci.org/EduGraph/EduGraph-Text-analysis)
+
 The ModulKatalogController is a webapplication which offers the functionality of analysing given modulcatalogs from universitys.
 The Application is build and optimized for JBoss (wildfly) Application Server. The development is still in progress. 
 
