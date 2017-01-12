@@ -11,7 +11,7 @@ import java.util.List;
  * @author Manuel Raddatz
  *
  */
-public class Modul implements Serializable
+public class Modul implements Serializable, Comparable<Modul>
 {
 
 	/**
@@ -298,6 +298,12 @@ public class Modul implements Serializable
 	public void setEcts(Integer ects)
 	{
 		this.ects = ects;
+	}
+
+	@Override
+	public int compareTo(Modul o)
+	{
+		return Integer.compare(this.ects, o.ects);
 	}
 	
 	

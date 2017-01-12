@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.thb.modulkatalogcontroller.factory.CalculationFactory;
@@ -47,7 +48,6 @@ public class KatalogTextExtractor {
 	public KatalogTextExtractor(Katalog katalog, List<Modul> moduls, byte[] fileContent) throws IOException, SolrServerException {
 		super();
 		this.b=fileContent;
-		System.out.println("BYTEARRAY in CONSTRUCTOR: "+fileContent.toString());
 		this.katalog = katalog;
 		this.moduls=moduls;
 		init();
@@ -88,7 +88,7 @@ public class KatalogTextExtractor {
 	 * @throws IOException
 	 * @throws SolrServerException 
 	 */
-	public void extractModultext() throws IOException, SolrServerException  //String inputFile //array<String>
+	public void extractModultext() throws IOException, SolrServerException, PatternSyntaxException  //String inputFile //array<String>
 	{
 		ArrayList<Integer> modulStarts = new ArrayList<>();
 		
@@ -125,7 +125,7 @@ public class KatalogTextExtractor {
 		String trim = pageText.replaceAll("\\r\\n|\\r|\\n", " ");
 		String clearText = trim.replaceAll("\\s+", " ");
 		
-		Pattern pattern = Pattern.compile(regexPatternStringModulKennung);
+		Pattern pattern  =  Pattern.compile(regexPatternStringModulKennung);
 		Matcher matcher = pattern.matcher(clearText);
 
 		String modul = null;
@@ -146,13 +146,13 @@ public class KatalogTextExtractor {
 			m.setUniversityName(universityName);
 			m.setText(modul);
 			m.setCleanText(modul);
-			m.setModulName(modul.substring(0, 35).replaceAll("\\p{Punct}", ""));
+			m.setModulName(modul.substring(0, 30).replaceAll("\\p{Punct}", ""));
 			
 			Integer ects;
 			try{
 				ects= Integer.parseInt(getECTS(extractParts(m)));
 			}catch(NumberFormatException n){
-				System.out.println("Keine ECTS erkannt: "+m.getModulName());
+				System.err.println("Keine ECTS erkannt: "+m.getModulName());
 				ects = 0;
 			}
 			m.setEcts(ects);
@@ -324,11 +324,6 @@ public class KatalogTextExtractor {
 				
 				char[] c = modulText.substring(modulPart.getStartIndex(), modulPart.getEndIndex()).toCharArray();
 				
-				for(char x : c){
-					System.out.print(x);
-				}
-				System.out.println("RUNNING ECTS EXTRACTION..............");
-				
 				for (int j = 0; j < c.length; j++)
 				{
 					if (Character.isDigit(c[j]))
@@ -390,7 +385,6 @@ public class KatalogTextExtractor {
 			start = m.start();
 			count++;
 			if(item.getFieldname().equals(FormFieldNames.INDIKATOR_ECTS)&&count !=0){
-				System.out.println("PATTERN-start-Ects: "+start);
 				return start;
 			}
 		}
@@ -414,7 +408,6 @@ public class KatalogTextExtractor {
 			end = m.end();
 			count++;
 			if(item.getFieldname().equals(FormFieldNames.INDIKATOR_ECTS)&&count!=0){
-				System.out.println("PATTERN-end-Ects: "+end);
 				return end;
 			}
 		}

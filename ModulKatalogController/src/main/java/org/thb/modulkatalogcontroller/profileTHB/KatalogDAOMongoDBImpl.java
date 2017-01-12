@@ -1,20 +1,20 @@
 package org.thb.modulkatalogcontroller.profileTHB;
 
 import org.thb.modulkatalogcontroller.DaoReturn;
-import org.thb.modulkatalogcontroller.model.ControlFormItems;
-import org.thb.modulkatalogcontroller.model.FormFieldNames;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
+import org.thb.modulkatalogcontroller.model.KatalogDTO;
 import org.thb.modulkatalogcontroller.model.Modul;
 
-import com.mongodb.BasicDBObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import org.bson.*;
@@ -54,12 +54,12 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		public List<Object> getAllKatalogs()
 		{
 			List<Object> katalogs = new ArrayList<>();
-			 FindIterable<Document> cursor = dbCollection.find();
+			FindIterable<Document> cursor = dbCollection.find();
 			
 			    for (Document document : cursor)
 				{				
-			    	System.out.println("Document from DB: "+document.getString("hochschulname"));
-			    	katalogs.add(document.getString("hochschulname"));
+			    	System.out.println("Document from DB: "+document.getString("_id"));
+			    	katalogs.add(document.getString("_id"));
 				}
 			
 			return katalogs;
@@ -69,13 +69,40 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		 * Returning the saved Katalog as Object. Actually it is saved as JSON.
 		 */
 		@Override
-		public Object getKatalogByName(String katalogName)
+		public KatalogDTO getKatalogById(String id)
 		{
-			return null;
+			Document bson = new Document();
+			bson.append("message", "Katalog nicht gefunden");
+			
+			FindIterable<Document> cursor = dbCollection.find();
+			ObjectMapper mapper = new ObjectMapper();
+			KatalogDTO dto = null;
+		    for (Document document : cursor)
+			{				
+		    	if(document.getString("_id").equalsIgnoreCase(id)){
+		    		try
+					{
+		    			dto = mapper.readValue(document.toJson(), KatalogDTO.class);
+						return dto;
+					} catch (IOException e)
+					{
+						System.err.println("Error while mapping BsonDocument to KatalogDTO: "+e.getMessage());
+					}
+		    	}
+			}	    
+		    KatalogDTO errorKatalog = null;
+			try
+			{
+				errorKatalog = mapper.readValue(bson.toJson(), KatalogDTO.class);
+			} catch (IOException e)
+			{
+				System.err.println("IOException: "+e.getMessage());
+			}
+		    return errorKatalog;
 		}
 
 		@Override
-		public String updateKatalog(Katalog katalog)
+		public String updateKatalog(KatalogDTO katalog)
 		{
 			return DaoReturn.OK;
 			
@@ -85,77 +112,56 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		 * Delete the Katalog with the corresponding document from filesystem.
 		 */
 		@Override
-		public String deleteKatalog(Katalog katalog)
+		public String deleteKatalog(String katalogId)
 		{
 			return DaoReturn.OK;
 			
 		}
 
-		/**
-		 * Adding the given Katalog to the Database. Not all Information are saved.
-		 */
 		@Override
-		public String addKatalog(Katalog katalog)
+		public void deleteTopTwoECTSModule(Katalog katalog)
+		{
+			List<Modul> moduls = katalog.getModuls();
+			Collections.sort(moduls);
+			
+			if(moduls.size()>1){
+				moduls.remove(0);
+				moduls.remove(1);
+			}
+		}
+
+		@SuppressWarnings("static-access")
+		@Override
+		public String addKatalog(KatalogDTO katalog)
 		{
 			
 			Document basicObject = new Document();
-			
+
 			FindIterable<Document> cursor = dbCollection.find();
-			
-			for (ControlFormItems item : katalog.getControlItems()) {
-				if (item.getFieldname().equals(FormFieldNames.HOCHSCHULNAME)) {
-					for(Document d :cursor){
-						if(d.getString("hochschulname").equalsIgnoreCase(item.getFieldValue())){
-							System.out.println("Hochschule in db vorhanden");
-							return DaoReturn.KATALOGinDATABASE;
+
+			if(cursor != null){
+				for(Document d :cursor){
+					if(d!=null | !d.isEmpty()){
+						if(d.getString("_id")!=null | !d.getString("_id").isEmpty()){
+							if(d.getString("_id").equalsIgnoreCase(katalog.getId())){
+								System.out.println("Hochschule in db vorhanden");
+								return DaoReturn.KATALOGinDATABASE;
+							}
 						}
 					}
-					basicObject.put("_id", item.getFieldValue());
-					basicObject.put("hochschulname", item.getFieldValue());
-					basicObject.put("katalogfile", katalog.getFilePath().toString());
-					basicObject.put("date", Calendar.getInstance().getTime().toString());
 				}
 			}
-					
-			ArrayList<BasicDBObject> moduls = new ArrayList<>();
-			for (Modul m : katalog.getModuls()) {
-				BasicDBObject detailObject = new BasicDBObject();
-				detailObject.append("modulname", m.getModulName());
-				detailObject.append("ects", m.getEcts());
-				detailObject.append("bwlScore", m.getBwlScore());
-				detailObject.append("infScore", m.getInfScore());
-				detailObject.append("wiScore", m.getWiScore());
-				detailObject.append("bwlScoreNormalized", m.getBwlScoreNormalized());
-				detailObject.append("infScoreNormalized", m.getInfScoreNormalized());
-				detailObject.append("wiScoreNormalized", m.getWiScoreNormalized());
-				detailObject.append("nnScoreNormalized", m.getNnScoreNormalized());
-				
-				/*
-				ArrayList<BasicDBObject>vector = new ArrayList<>();
-				for (org.thb.modulkatalogcontroller.model.Term t : m.getDocumentVector().getTerms()) {
-					BasicDBObject vectorObject = new BasicDBObject();
-					vectorObject.append(t.getWord(), t.getTermFrequency());
-					vector.add(vectorObject);
-				}
-				detailObject.append("vector", vector);
-				*/
-				
-				moduls.add(detailObject);	
+			Document doc = null;
+			if(katalog!=null){
+				doc = basicObject.parse(katalog.toString());
+				doc.put("_id", katalog.getId());
+			}else{
+				return DaoReturn.ERROR;
 			}
-			basicObject.append("moduls", moduls);
 
-			dbCollection.insertOne(basicObject);
-			
+			dbCollection.insertOne(doc);
+
 			return DaoReturn.OK;
-		}
-		
-		/**
-		 * Returning the needed Information for building the pillar 
-		 */
-		@Override
-		public String getAllNormalizedScores(String id)
-		{
-			return null;
 		}
 	}
 	

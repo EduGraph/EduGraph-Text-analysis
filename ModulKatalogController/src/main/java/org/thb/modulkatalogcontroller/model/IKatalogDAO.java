@@ -13,14 +13,19 @@ public interface IKatalogDAO
 	
 	public List<Object> getAllKatalogs();
 	
-	public Object getKatalogByName(String katalogName);
+	/**
+	 * TODO: Need to change the response. it is needed a transfer object which has the structure of the database document 
+	 * @param id
+	 * @return
+	 */
+	public KatalogDTO getKatalogById(String id);
 	
-	public String updateKatalog(Katalog katalog);
+	public String updateKatalog(KatalogDTO katalog);
 	
-	public String deleteKatalog(Katalog katalog);
+	public String deleteKatalog(String katalogId);
 	
-	public String addKatalog(Katalog katalog);
-	
-	public String getAllNormalizedScores(String pillar);
+	public String addKatalog(KatalogDTO katalog);
+
+	public void deleteTopTwoECTSModule(Katalog katalog);
 
 }

@@ -9,6 +9,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
@@ -229,7 +230,7 @@ public class SolrConnection implements Serializable
 	 * @throws IOException
 	 * @throws SolrServerException 
 	 */
-	public void deleteIndex(List<Modul> moduls) throws IOException, SolrServerException{	
+	public void deleteIndex(List<Modul> moduls) throws IOException, SolrServerException, RemoteSolrException{	
 		solrClient = new HttpSolrClient(ApplicationProperties.getInstance().getApplicationProperty((ApplicationPropertiesKeys.SOLRURLSTRING)));	
 		List<String> ids = new ArrayList<>();
 		for(Modul m : moduls){

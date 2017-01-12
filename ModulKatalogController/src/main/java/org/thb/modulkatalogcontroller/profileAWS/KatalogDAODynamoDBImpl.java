@@ -5,6 +5,7 @@ import java.util.List;
 import org.thb.modulkatalogcontroller.DaoReturn;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
+import org.thb.modulkatalogcontroller.model.KatalogDTO;
 
 /**
  * The aws profile uses a DynamoDB as persistence layer. DynamoDB is similar to MongoDB. It ist a document oriented DB.
@@ -21,8 +22,6 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 		System.out.println("DynamoDB constructor: "+databaseServer);
 	}
 	
-	
-	
 	@Override
 	public IKatalogDAO instance(String databaseServer, Integer databasePort, String databaseName,
 			String databaseCollectionName)
@@ -37,33 +36,35 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 	}
 
 	@Override
-	public Object getKatalogByName(String katalogName)
+	public KatalogDTO getKatalogById(String id)
 	{
 		return null;
 	}
 
 	@Override
-	public String updateKatalog(Katalog katalog)
+	public String addKatalog(KatalogDTO katalog)
 	{
 		return DaoReturn.OK;
 	}
 
 	@Override
-	public String deleteKatalog(Katalog katalog)
+	public void deleteTopTwoECTSModule(Katalog katalog)
 	{
-		return DaoReturn.OK;
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
-	public String addKatalog(Katalog katalog)
+	public String updateKatalog(KatalogDTO katalog)
 	{
-		return DaoReturn.OK;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
 
 	@Override
-	public String getAllNormalizedScores(String pillar)
+	public String deleteKatalog(String katalogId)
 	{
 		// TODO Auto-generated method stub
 		return null;

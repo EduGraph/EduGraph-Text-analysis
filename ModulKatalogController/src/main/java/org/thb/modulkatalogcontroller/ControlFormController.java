@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -167,6 +168,11 @@ public class ControlFormController implements Serializable
 		nameHS.setType(FormItemTypEnum.STRING);
 		formItems.add(nameHS);
 		
+		ControlFormItems idHS = new ControlFormItems();
+		idHS.setFieldname(FormFieldNames.HOCHSCHULID);
+		idHS.setType(FormItemTypEnum.STRING);
+		formItems.add(idHS);
+		
 		ControlFormItems katalogItem = new ControlFormItems();
 		katalogItem.setFieldname(FormFieldNames.KATALOGDATEI);
 		katalogItem.setType(FormItemTypEnum.FILE);
@@ -249,7 +255,10 @@ public class ControlFormController implements Serializable
 		{
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while trying to connect to Solr. Please confirm Connection to Solr Server.",e.getLocalizedMessage()));
 			return "";
-		}		
+		}catch (PatternSyntaxException e){
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Regex Error. Please check the syntax of the regularexpression.",e.getLocalizedMessage()));
+			return "";
+		}
 		
 	    return Pages.DOCUMENTCONFIRM;
 	}

@@ -15,9 +15,11 @@ import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.thb.modulkatalogcontroller.factory.DatabaseConnectionFactory;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
+import org.thb.modulkatalogcontroller.model.KatalogDTO;
 import org.thb.modulkatalogcontroller.solr.SolrConnection;
 
 /**
@@ -68,7 +70,8 @@ public class SaveFormController implements Serializable
 				ApplicationProperties.getInstance()
 						.getApplicationProperty(ApplicationPropertiesKeys.DATABASEKATALOGCOLLECTIONSTRING));
 
-		String result = instance.addKatalog(katalog);
+		//String result = instance.addKatalog(katalog);
+		String result = instance.addKatalog(new KatalogDTO(katalog));
 		
 		if(result.equals(DaoReturn.KATALOGinDATABASE)){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,	"WARNING, Katalog is already in Database. PLEASE TRY AGAIN WITH ANOTHER CATALOG", null));
@@ -112,6 +115,8 @@ public class SaveFormController implements Serializable
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
 					"IOException deleting index and deleting tempFile", e.getLocalizedMessage()));
 			return "";
+		}catch(RemoteSolrException ex){
+			return Pages.INDEX;
 		}
 		
 		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
