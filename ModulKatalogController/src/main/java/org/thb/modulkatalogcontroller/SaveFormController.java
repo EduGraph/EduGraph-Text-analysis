@@ -20,6 +20,7 @@ import org.thb.modulkatalogcontroller.factory.DatabaseConnectionFactory;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
 import org.thb.modulkatalogcontroller.model.Katalog;
 import org.thb.modulkatalogcontroller.model.KatalogDTO;
+import org.thb.modulkatalogcontroller.profileAWS.AmazonS3UploadImpl;
 import org.thb.modulkatalogcontroller.solr.SolrConnection;
 
 /**
@@ -70,7 +71,6 @@ public class SaveFormController implements Serializable
 				ApplicationProperties.getInstance()
 						.getApplicationProperty(ApplicationPropertiesKeys.DATABASEKATALOGCOLLECTIONSTRING));
 
-		//String result = instance.addKatalog(katalog);
 		String result = instance.addKatalog(new KatalogDTO(katalog));
 		
 		if(result.equals(DaoReturn.KATALOGinDATABASE)){
@@ -104,7 +104,11 @@ public class SaveFormController implements Serializable
 		try
 		{
 			solrConnect.deleteIndex(katalog.getModuls());
-			deleteTempFile(katalog.getFilePath());
+			if(!ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.PROFILEID).equalsIgnoreCase("aws")){
+				if(katalog.getFilePath()!=null){
+					deleteTempFile(katalog.getFilePath());
+				}	
+			}	
 		} catch (SolrServerException e)
 		{
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
@@ -118,9 +122,7 @@ public class SaveFormController implements Serializable
 		}catch(RemoteSolrException ex){
 			return Pages.INDEX;
 		}
-		
 		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-		
 		return Pages.INDEX;
 	}
 
@@ -133,21 +135,28 @@ public class SaveFormController implements Serializable
 	private boolean saveCatalogToUploadDirectory(Katalog katalog)
 	{
 
-		byte[] bytes = katalog.getFileContent();
-		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-		try
-		{
-			FileOutputStream out = new FileOutputStream(new File(katalog.getFilePath().toString()));
-			IOUtils.copy(in, out);
-			in.close();
-			out.close();
-		} catch (FileNotFoundException e)
-		{
-			System.out.println("FileNotFoundError saving KatalogFile: " + e.getMessage());
-		} catch (IOException e)
-		{
-			System.out.println("IOError saving KatalogFile: " + e.getMessage());
-		}
+		if(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.PROFILEID).equalsIgnoreCase("aws")){
+			
+			IUploadService iUploadService = new AmazonS3UploadImpl();
+			iUploadService.uploadCatalog("aws", katalog);
+			
+		}else{
+			byte[] bytes = katalog.getFileContent();
+			ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+			try
+			{
+				FileOutputStream out = new FileOutputStream(new File(katalog.getFilePath().toString()));
+				IOUtils.copy(in, out);
+				in.close();
+				out.close();
+			} catch (FileNotFoundException e)
+			{
+				System.out.println("FileNotFoundError saving KatalogFile: " + e.getMessage());
+			} catch (IOException e)
+			{
+				System.out.println("IOError saving KatalogFile: " + e.getMessage());
+			}
+		}	
 		return true;
 	}
 

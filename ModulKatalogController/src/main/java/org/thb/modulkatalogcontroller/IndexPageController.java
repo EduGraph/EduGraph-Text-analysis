@@ -21,5 +21,7 @@ public class IndexPageController implements Serializable
 		return Pages.VIEWPAGE;
 	}
 	
-
+	public String goToTestProgressBarPage(){
+		return Pages.TESTPROGRESSBAR;
+	}
 }

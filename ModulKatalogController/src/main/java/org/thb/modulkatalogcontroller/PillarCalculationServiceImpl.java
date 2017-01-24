@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.thb.modulkatalogcontroller.model.ModulDTO;
+import org.thb.modulkatalogcontroller.rest.IPillarCalculationService;
 
 /**
  * The PillarCalculationServiceImpl is the Implementation of the

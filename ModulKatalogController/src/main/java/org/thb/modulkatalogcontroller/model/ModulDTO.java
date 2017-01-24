@@ -125,8 +125,5 @@ public class ModulDTO
 		return "ects=" + ects + ", infScoreNormalized=" + infScoreNormalized + ", bwlScoreNormalized="
 				+ bwlScoreNormalized + ", wiScoreNormalized=" + wiScoreNormalized + ", nnScoreNormalized="
 				+ nnScoreNormalized;
-	}
-	
-	
-	
+	}	
 }

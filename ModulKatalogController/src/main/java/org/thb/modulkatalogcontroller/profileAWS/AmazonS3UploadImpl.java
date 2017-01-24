@@ -1,10 +1,13 @@
 package org.thb.modulkatalogcontroller.profileAWS;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 
 import org.thb.modulkatalogcontroller.ApplicationProperties;
 import org.thb.modulkatalogcontroller.ApplicationPropertiesKeys;
 import org.thb.modulkatalogcontroller.IUploadService;
+import org.thb.modulkatalogcontroller.model.Katalog;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -13,6 +16,8 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 public class AmazonS3UploadImpl implements IUploadService
@@ -28,12 +33,12 @@ public class AmazonS3UploadImpl implements IUploadService
 	{
 		try{
 
-			s3File = new File("config/credentials.properties");
+			s3File = new File(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.AWSCREDENTIALSPROPERTIESFILE));
 			
 			pc = new PropertiesCredentials(s3File);
 			
 			awsS3 = new AmazonS3Client(pc);
-			region = Region.getRegion(Regions.US_WEST_2);
+			region = Region.getRegion(Regions.fromName(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.AWSREGION)));
 			awsS3.setRegion(region);
 			
 		}catch(Exception e){
@@ -43,27 +48,43 @@ public class AmazonS3UploadImpl implements IUploadService
 	
 	
 	@Override
-	public boolean uploadCatalog(String profileID, String fileName)
+	public boolean uploadCatalog(String profileID, Katalog katalog)
 	{
 		boolean result = false;
 		try{
-			
-		 System.out.println("Uploading a new object to S3 from a file\n");
-         File file = new File(fileName);
-         
-         awsS3.putObject(new PutObjectRequest(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.S3BUCKET), fileName, file));
+		 File file = null;
+		 try{
+			 if(katalog.getFilePath()!=null){
+				 file = new File(katalog.getFilePath().getFileName().toString());
+				 awsS3.putObject(new PutObjectRequest(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.S3BUCKET), katalog.getFilePath().getFileName().toString(), file));
+			 }else{
+				 file = new File(katalog.getAwsPath().substring(katalog.getAwsPath().lastIndexOf("/"), katalog.getAwsPath().length()));
+				 
+				 InputStream stream = new ByteArrayInputStream(katalog.getFileContent());
+		         ObjectMetadata meta = new ObjectMetadata();
+		         meta.setContentLength(katalog.getFileContent().length);
+		         meta.setContentType("application/pdf");
+		       		           
+		         awsS3.putObject(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.S3BUCKET), katalog.getAwsPath().substring(katalog.getAwsPath().lastIndexOf("/"), katalog.getAwsPath().length()), stream, meta);
+		         awsS3.setObjectAcl(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.S3BUCKET),  katalog.getAwsPath().substring(katalog.getAwsPath().lastIndexOf("/"),katalog.getAwsPath().length()), CannedAccessControlList.PublicRead);
+			 
+			 } 
+		 }catch(Exception ex){
+			 System.err.println("Error while creating File from katalogObject: "+ex.getMessage());
+		 }
+ 
          result = true;
+        
       } catch (AmazonServiceException ase) {
-         System.out.println("Error Message:    " + ase.getMessage());
-         System.out.println("HTTP Status Code: " + ase.getStatusCode());
-         System.out.println("AWS Error Code:   " + ase.getErrorCode());
-         System.out.println("Error Type:       " + ase.getErrorType());
-         System.out.println("Request ID:       " + ase.getRequestId());
+         System.err.println("AmazonServiceException-Error Message:    " + ase.getMessage());
+         System.err.println("HTTP Status Code: " + ase.getStatusCode());
+         System.err.println("AWS Error Code:   " + ase.getErrorCode());
+         System.err.println("Error Type:       " + ase.getErrorType());
+         System.err.println("Request ID:       " + ase.getRequestId());
      } catch (AmazonClientException ace) {
     	 
-         System.out.println("Error Message: " + ace.getMessage());
-     }
-		
+         System.err.println("AmazonClientException-Error Message: " + ace.getMessage());
+     }	
 		return result;
 	}
 

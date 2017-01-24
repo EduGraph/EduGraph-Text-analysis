@@ -46,6 +46,7 @@ public class ControlFormController implements Serializable
 	private String fieldname;
 	private UploadedFile katalogFile;
 	
+	private Integer progress;
 	/**
 	 * Constructor of CDI Bean. During Call the used components are initialized.
 	 */
@@ -214,23 +215,44 @@ public class ControlFormController implements Serializable
 	 * @throws SolrServerException
 	 */
 	public String save() throws IOException, SolrServerException{
-
+		
+		System.out.println("Calling SAVE METHODE:.............");
 		byte[] fileContent = null;
 		
 		String extension = FilenameUtils.getExtension(katalogFile.getFileName());
 			
 		String filename =FilenameUtils.getBaseName(katalogFile.getFileName());
 		
-		Path folder = Paths.get(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.UPLOADDIRECTORY));
-				
-		Path file = Files.createTempFile(folder, filename + "-", "." + extension);
-		
-		katalog.setFilePath(file);
+		Path file = null;
+		Path folder = null;
+		try{
+			if(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.PROFILEID).equalsIgnoreCase("aws")){
+				StringBuilder sb = new StringBuilder();
+				sb.append("https://s3");
+				sb.append("-");
+				sb.append(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.AWSREGION));
+				sb.append(".amazonaws.com");
+				sb.append("/");			
+				sb.append(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.S3BUCKET));
+				sb.append("//");
+				sb.append(filename);
+				sb.append(".");
+				sb.append(extension);
+				katalog.setAwsPath(sb.toString());
+			}else{
+				folder = Paths.get(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.UPLOADDIRECTORY));
+				file = Files.createTempFile(folder, filename + "-", "." + extension);
+			}
+		}catch(Exception e){
+			System.err.println("Error creating uploadPath: "+e.getMessage());
+		}
 
+		katalog.setFilePath(file);
+		
 		fileContent = katalogFile.getContents();
 		
 		katalog.setFileContent(fileContent);
-		 
+
 		for (ControlFormItems item : katalog.getControlItems())
 		{
 			if(item.getFieldname().equals(FormFieldNames.KATALOGDATEI)){
@@ -238,7 +260,7 @@ public class ControlFormController implements Serializable
 				item.setFieldValue(katalogFile.getFileName());
 			}
 		} 
-		 
+
 		katalog.setModuls(moduls);
 		
 		KatalogTextExtractor katalogExtractor;
@@ -246,7 +268,9 @@ public class ControlFormController implements Serializable
 		try
 		{		
 			katalogExtractor = new KatalogTextExtractor(katalog, moduls, fileContent);
+
 			katalogExtractor.extractModultext();
+
 		} catch (IOException e)
 		{
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while reading the uploaded file during extraction.",e.getLocalizedMessage()));
@@ -258,8 +282,10 @@ public class ControlFormController implements Serializable
 		}catch (PatternSyntaxException e){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Regex Error. Please check the syntax of the regularexpression.",e.getLocalizedMessage()));
 			return "";
+		}catch (Exception e){
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "An unexpected Error occured, Please conact the Admin.",e.getLocalizedMessage()));
+			return "";
 		}
-		
 	    return Pages.DOCUMENTCONFIRM;
 	}
 
@@ -269,6 +295,32 @@ public class ControlFormController implements Serializable
 	 */
 	public FormItemTypEnum[] getStatuses() {
         return FormItemTypEnum.values();
+    }
+	
+	public Integer getProgress() {
+        if(progress == null) {
+            progress = 0;
+        }
+        else {
+            progress = progress + (int)(Math.random() * 35);
+             
+            if(progress > 100)
+                progress = 100;
+        }
+         
+        return progress;
+    }
+	
+    public void setProgress(Integer progress) {
+        this.progress = progress;
+    }
+     
+    public void onComplete() throws IOException {
+    	FacesContext.getCurrentInstance().getExternalContext().redirect("controlForm.xhtml");
+    }
+     
+    public void cancel() {
+        progress = null;
     }
 	
 }

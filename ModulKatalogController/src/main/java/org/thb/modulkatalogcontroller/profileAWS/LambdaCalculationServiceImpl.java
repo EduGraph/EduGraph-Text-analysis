@@ -52,19 +52,33 @@ public class LambdaCalculationServiceImpl implements ICalculationService
 	 * @throws IllegalArgumentException
 	 * @throws IOException
 	 */
-	private void init() throws FileNotFoundException, IllegalArgumentException, IOException
+	private void init()
 	{
 		s3CredentialsFile = new File(ApplicationProperties.getInstance()
 				.getApplicationProperty(ApplicationPropertiesKeys.AWSCREDENTIALSPROPERTIESFILE));
 
-		PropertiesCredentials pc = new PropertiesCredentials(s3CredentialsFile);
-		functionName = ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.AWSCALCULATIONLAMBDAFUNCTION);
-		
-		lambdaClient = new AWSLambdaClient(pc);
-		lambdaClient.configureRegion(Regions.US_WEST_2);
+		PropertiesCredentials pc = null;;
+		try
+		{
+			pc = new PropertiesCredentials(s3CredentialsFile);
+			functionName = ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.AWSCALCULATIONLAMBDAFUNCTION);
+			
+			lambdaClient = new AWSLambdaClient(pc);
+			lambdaClient.configureRegion(Regions.US_WEST_2);
 
-		invokeRequest = new InvokeRequest();
-		invokeRequest.setFunctionName(functionName);
+			invokeRequest = new InvokeRequest();
+			invokeRequest.setFunctionName(functionName);
+		} catch (FileNotFoundException e)
+		{
+			System.err.println("Error (FileNotFound) while getting Propertiesfile for credentials: "+e.getMessage() );
+		} catch (IllegalArgumentException e)
+		{
+			System.err.println("Error (IllegalArgument) while getting Propertiesfile for credentials: "+e.getMessage() );
+		} catch (IOException e)
+		{
+			System.err.println("Error (IOException) while getting Propertiesfile for credentials: "+e.getMessage() );
+		}
+
 	}
 
 	/**

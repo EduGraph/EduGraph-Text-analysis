@@ -13,5 +13,6 @@ public class Pages
 	public final static String VIEWPAGE = "viewCatalog?faces-redirect=trues";
 	public final static String CLEANMODUL = "cleanModul";
 	public final static String INDEX = "index?faces-redirect=true";
+	public final static String TESTPROGRESSBAR = "testProgressBar?faces-redirect=true";
 	
 }

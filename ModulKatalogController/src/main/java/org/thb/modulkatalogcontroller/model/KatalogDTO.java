@@ -45,7 +45,11 @@ public class KatalogDTO
 				this.id= item.getFieldValue();
 			}
 		}
-		this.katalogFile=katalog.getFilePath().toString();
+		if(katalog.getFilePath()!=null){
+			this.katalogFile=katalog.getFilePath().toString();
+		}else{
+			this.katalogFile=katalog.getAwsPath();
+		}
 		this.dateTime= Calendar.getInstance().getTime().toString();
 		
 		for(Modul m : katalog.getModuls()){

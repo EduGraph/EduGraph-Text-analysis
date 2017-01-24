@@ -17,6 +17,8 @@ public class Katalog implements Serializable
 	
 	private Path filePath;
 	
+	private String awsPath;
+	
 	private byte[] fileContent;
 	
 	private List<ControlFormItems> controlItems;
@@ -58,6 +60,22 @@ public class Katalog implements Serializable
 		this.filePath = filePath;
 	}
 	
+	/**
+	 * @return the awsPath
+	 */
+	public String getAwsPath()
+	{
+		return awsPath;
+	}
+
+	/**
+	 * @param awsPath the awsPath to set
+	 */
+	public void setAwsPath(String awsPath)
+	{
+		this.awsPath = awsPath;
+	}
+
 	/**
 	 * Constructor of the Katalog Class. During Instantiation an empty List of Moduls the SolrConnection 
 	 * and the keyClassVectors are

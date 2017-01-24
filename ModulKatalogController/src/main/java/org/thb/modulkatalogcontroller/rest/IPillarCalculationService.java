@@ -1,4 +1,4 @@
-package org.thb.modulkatalogcontroller;
+package org.thb.modulkatalogcontroller.rest;
 
 import java.util.List;
 import java.util.Map;

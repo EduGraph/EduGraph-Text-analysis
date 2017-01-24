@@ -12,7 +12,6 @@ import javax.ws.rs.core.Response;
 
 import org.thb.modulkatalogcontroller.ApplicationProperties;
 import org.thb.modulkatalogcontroller.ApplicationPropertiesKeys;
-import org.thb.modulkatalogcontroller.IPillarCalculationService;
 import org.thb.modulkatalogcontroller.PillarCalculationServiceImpl;
 import org.thb.modulkatalogcontroller.factory.DatabaseConnectionFactory;
 import org.thb.modulkatalogcontroller.model.IKatalogDAO;
@@ -36,7 +35,6 @@ public class ModulKatalogREST
 				Integer.parseInt(ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.DATABASECLIENTPORTSTRING)),
 				ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.DATABASENAMESTRING), 
 				ApplicationProperties.getInstance().getApplicationProperty(ApplicationPropertiesKeys.DATABASEKATALOGCOLLECTIONSTRING));
-	
 	}
 	
 	/**

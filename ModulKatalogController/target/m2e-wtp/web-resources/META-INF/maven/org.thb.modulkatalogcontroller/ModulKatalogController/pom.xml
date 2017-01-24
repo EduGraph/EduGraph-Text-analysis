@@ -269,6 +269,13 @@
 	</dependencies>
 
 	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
 		<finalName>${project.artifactId}</finalName>
 		<pluginManagement>
 			<plugins>
@@ -332,12 +339,6 @@
 			</dependencies>
 			<build>
 				<plugins>
-					<!-- <plugin> <groupId>org.wildfly.plugins</groupId> <artifactId>wildfly-maven-plugin</artifactId> 
-						<version>${version.wildfly.maven.plugin}</version> <executions> <execution> 
-						<configuration> <configuration> <serverConfig>standalone.xml</serverConfig> 
-						<jvmArgs>-Djboss.socket.binding.port-offset=100</jvmArgs> <filename>${project.artifactId}.war</filename> 
-						</configuration> </configuration> <phase>install</phase> <goals> <goal>deploy</goal> 
-						</goals> </execution> </executions> </plugin> -->
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
@@ -366,11 +367,6 @@
 							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
 						</configuration>
 					</plugin>
-					<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
-						<configuration> <excludes> <exclude>**/profileAWS/AmazonS3Access.java</exclude> 
-						<exclude>**/profileAWS/AmazonS3UploadImpl.java</exclude> <exclude>**/profileAWS/KatalogDAODynamoDBImpl.java</exclude> 
-						<exclude>**/profileAWS/LambdaCalculationServiceImpl.java</exclude> </excludes> 
-						</configuration> </plugin> -->
 				</plugins>
 			</build>
 		</profile>
@@ -385,6 +381,24 @@
 					<groupId>com.amazonaws</groupId>
 					<artifactId>aws-java-sdk</artifactId>
 					<version>1.11.57</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongo-java-driver</artifactId>
+					<version>${version.mongodb}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>bson</artifactId>
+					<version>${version.mongodb}</version>
+					<scope>provided</scope>
+				</dependency>
+				<dependency>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongodb-driver-core</artifactId>
+					<version>${version.mongodb}</version>
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
@@ -425,10 +439,8 @@
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
 							<packagingExcludes>**/profileAWS/*.class</packagingExcludes>
-							<!-- <outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
 						</configuration>
 					</plugin>
-
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
@@ -440,6 +452,26 @@
 								<exclude>**/profileAWS/LambdaCalculationServiceImpl.java</exclude>
 							</excludes>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>wagon-maven-plugin</artifactId>
+						<version>1.0</version>
+						<configuration>
+							<serverId>172.16.32.159</serverId>
+							<fromFile>${project.build.directory}/${project.artifactId}.war</fromFile>
+							<url>scp://raddatz@172.16.32.159/opt/wildfly/standalone/deployments</url>
+							<toDir>/opt/wildfly/standalone/deployments</toDir>
+						</configuration>
+						<executions>
+							<execution>
+								<id>upload-war-to-server</id>
+								<phase>install</phase>
+								<goals>
+									<goal>upload-single</goal>
+								</goals>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
@@ -500,7 +532,7 @@
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
 							<packagingExcludes>**/profileTHB/*.class</packagingExcludes>
-							<!-- <outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
+							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -508,14 +540,14 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
 							<excludes>
-								<exclude>**/profileTHB/KatalogDAOMongoDBImpl.java</exclude>
 								<exclude>**/profileTHB/CalculationServiceImpl.java</exclude>
+								<exclude>**/profileTHB/KatalogDAOMongoDBImpl.java</exclude>
+								<exclude>**/profileTHB/LocalUploadImpl.java</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
 				</plugins>
 			</build>
 		</profile>
-
 	</profiles>
 </project>
