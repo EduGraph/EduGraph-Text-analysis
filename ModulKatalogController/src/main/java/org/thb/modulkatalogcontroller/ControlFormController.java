@@ -216,8 +216,30 @@ public class ControlFormController implements Serializable
 	 */
 	public String save() throws IOException, SolrServerException{
 		
-		System.out.println("Calling SAVE METHODE:.............");
 		byte[] fileContent = null;
+		
+		if(katalogFile == null){
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error Please provide a Katalogfile.",null));
+			return "";
+		}
+		for(ControlFormItems item : formItems){
+			if(item.getFieldname().equalsIgnoreCase(FormFieldNames.HOCHSCHULID)){
+				if(item.getFieldValue()==null){
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error Please provide an Identifer for the University.",null));
+					return "";
+				}
+			}else if(item.getFieldname().equalsIgnoreCase(FormFieldNames.HOCHSCHULNAME)){
+				if(item.getFieldValue()==null){
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error Please provide a Name for the University.",null));
+					return "";
+				}
+			}else if(item.getFieldname().equalsIgnoreCase(FormFieldNames.INDIKATOR_ECTS)){
+				if(item.getFieldValue()==null){
+					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error Please provide an ECTS Indicator.",null));
+					return "";
+				}
+			}
+		}
 		
 		String extension = FilenameUtils.getExtension(katalogFile.getFileName());
 			
@@ -278,6 +300,7 @@ public class ControlFormController implements Serializable
 		} catch (SolrServerException e)
 		{
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error while trying to connect to Solr. Please confirm Connection to Solr Server.",e.getLocalizedMessage()));
+			System.err.println("Solr-Error: "+e.getMessage());
 			return "";
 		}catch (PatternSyntaxException e){
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Regex Error. Please check the syntax of the regularexpression.",e.getLocalizedMessage()));

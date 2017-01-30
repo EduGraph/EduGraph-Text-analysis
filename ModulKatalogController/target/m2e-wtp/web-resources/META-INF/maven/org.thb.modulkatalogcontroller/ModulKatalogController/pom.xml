@@ -97,8 +97,6 @@
 			<artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency> <groupId>org.jboss.resteasy</groupId> <artifactId>jaxrs-api</artifactId> 
-			<scope>provided</scope> </dependency> -->
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
@@ -283,7 +281,6 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${version.war.plugin}</version>
 					<configuration>
-						<!-- Java EE 7 doesn't require web.xml, Maven needs to catch up! -->
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
 				</plugin>
@@ -329,6 +326,7 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			<!-- 
 			<dependencies>
 				<dependency>
 					<groupId>com.amazonaws</groupId>
@@ -337,6 +335,7 @@
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
+			 -->
 			<build>
 				<plugins>
 					<plugin>
@@ -363,7 +362,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<packagingExcludes>**/profileAWS/*.class</packagingExcludes>
+							<!-- <packagingExcludes>**/profileAWS/*.class</packagingExcludes> -->
 							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
 						</configuration>
 					</plugin>
@@ -381,24 +380,6 @@
 					<groupId>com.amazonaws</groupId>
 					<artifactId>aws-java-sdk</artifactId>
 					<version>1.11.57</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongo-java-driver</artifactId>
-					<version>${version.mongodb}</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.mongodb</groupId>
-					<artifactId>bson</artifactId>
-					<version>${version.mongodb}</version>
-					<scope>provided</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongodb-driver-core</artifactId>
-					<version>${version.mongodb}</version>
 					<scope>provided</scope>
 				</dependency>
 			</dependencies>
@@ -460,7 +441,7 @@
 						<configuration>
 							<serverId>172.16.32.159</serverId>
 							<fromFile>${project.build.directory}/${project.artifactId}.war</fromFile>
-							<url>scp://raddatz@172.16.32.159/opt/wildfly/standalone/deployments</url>
+							<url>scp://wildfly@172.16.32.159/opt/wildfly/standalone/deployments</url>
 							<toDir>/opt/wildfly/standalone/deployments</toDir>
 						</configuration>
 						<executions>
@@ -486,6 +467,14 @@
 				<build.profile.id>aws</build.profile.id>
 			</properties>
 			<dependencies>
+			<!--
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk</artifactId>
+				<version>1.11.57</version>
+				<scope>provided</scope>
+			</dependency>
+			 -->
 				<dependency>
 					<groupId>org.mongodb</groupId>
 					<artifactId>mongo-java-driver</artifactId>
@@ -504,6 +493,7 @@
 					<version>${version.mongodb}</version>
 					<scope>provided</scope>
 				</dependency>
+				 
 			</dependencies>
 			<build>
 				<plugins>
@@ -528,11 +518,12 @@
 						</executions>
 					</plugin>
 					<plugin>
+					
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
 							<packagingExcludes>**/profileTHB/*.class</packagingExcludes>
-							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
+						<!--<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
 						</configuration>
 					</plugin>
 					<plugin>
@@ -546,6 +537,28 @@
 							</excludes>
 						</configuration>
 					</plugin>
+					 
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>wagon-maven-plugin</artifactId>
+						<version>1.0</version>
+						<configuration>
+							<serverId>aws</serverId>
+							<fromFile>${project.build.directory}/${project.artifactId}.war</fromFile>
+							<url>scp://ubuntu@54.214.155.34/opt/wildfly/standalone/deployments</url>
+							<toDir>/opt/wildfly/standalone/deployments</toDir>
+						</configuration>
+						<executions>
+							<execution>
+								<id>upload-war-to-server</id>
+								<phase>install</phase>
+								<goals>
+									<goal>upload-single</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					 
 				</plugins>
 			</build>
 		</profile>

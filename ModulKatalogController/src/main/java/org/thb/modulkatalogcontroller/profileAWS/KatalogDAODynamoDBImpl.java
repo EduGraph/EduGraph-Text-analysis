@@ -3,6 +3,7 @@ package org.thb.modulkatalogcontroller.profileAWS;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.thb.modulkatalogcontroller.ApplicationProperties;
@@ -19,7 +20,9 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
 import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.DeleteItemSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -77,7 +80,13 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 	@Override
 	public List<Object> getAllKatalogs()
 	{
-		return null;
+		List<Object> result = new ArrayList<>();
+		ItemCollection<ScanOutcome> scan = table.scan();
+		for (Item item : scan)
+		{
+			result.add((String) item.get("id"));
+		}
+		return result;
 	}
 
 	@Override
@@ -87,11 +96,13 @@ public class KatalogDAODynamoDBImpl implements IKatalogDAO
 		try {
 
            Item item = table.getItem(new PrimaryKey().addComponent("id", id));
+           System.out.println("returning dto: "+item.toJSONPretty());
            ObjectMapper mapper = new ObjectMapper();
            dto = mapper.readValue(item.toJSON(), KatalogDTO.class);
         } catch (Exception e) {
             System.err.println("Error while querying DynamoDB: "+e.getMessage());
         }
+		
 		return dto;
 	}
 

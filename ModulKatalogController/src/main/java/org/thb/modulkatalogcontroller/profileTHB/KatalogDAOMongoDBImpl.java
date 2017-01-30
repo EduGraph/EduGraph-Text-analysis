@@ -11,7 +11,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,11 +74,11 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		public KatalogDTO getKatalogById(String id)
 		{
 			Document bson = new Document();
-			bson.append("message", "Katalog nicht gefunden");
+			bson.append("message", "Katalog not found");
 			
 			FindIterable<Document> cursor = dbCollection.find();
 			ObjectMapper mapper = new ObjectMapper();
-			KatalogDTO dto = null;
+			KatalogDTO dto = new KatalogDTO();
 		    for (Document document : cursor)
 			{				
 		    	if(document.getString("_id").equalsIgnoreCase(id)){
@@ -90,7 +92,7 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 					}
 		    	}
 			}	    
-		    KatalogDTO errorKatalog = null;
+		    KatalogDTO errorKatalog = new KatalogDTO();
 			try
 			{
 				errorKatalog = mapper.readValue(bson.toJson(), KatalogDTO.class);
@@ -113,9 +115,27 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 		 */
 		@Override
 		public String deleteKatalog(String katalogId)
-		{
-			return DaoReturn.OK;
+		{	
+			KatalogDTO dto = getKatalogById(katalogId);
+			String katalogFile = dto.getKatalogFile();
+			if(katalogFile!=null){
+				try{
+					File f = new File(katalogFile);
+					f.delete();
+				}catch(Exception ex){
+					System.err.println("Error while deleting KatalogFile."+ ex.getMessage());
+				}
+			}
 			
+			Document query = new Document();
+			query.append("_id", katalogId);
+
+			DeleteResult result = dbCollection.deleteOne(query);
+			long numResult = result.getDeletedCount();
+			if(numResult==1){
+				return DaoReturn.OK;
+			}
+			return DaoReturn.ERROR;
 		}
 
 		@Override
@@ -144,7 +164,7 @@ public class KatalogDAOMongoDBImpl implements IKatalogDAO
 					if(d!=null | !d.isEmpty()){
 						if(d.getString("_id")!=null | !d.getString("_id").isEmpty()){
 							if(d.getString("_id").equalsIgnoreCase(katalog.getId())){
-								System.out.println("Hochschule in db vorhanden");
+								System.out.println("University allready in DB");
 								return DaoReturn.KATALOGinDATABASE;
 							}
 						}

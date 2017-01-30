@@ -1,12 +1,11 @@
 package org.thb.modulkatalogcontroller.factory;
 
 import org.thb.modulkatalogcontroller.IUploadService;
-import org.thb.modulkatalogcontroller.model.Katalog;
 
 public class UploadFactory
 {
 
-	public static IUploadService getUploadService(String profileID, Katalog katalog)
+	public static IUploadService getUploadService(String profileID)
 	{
 		IUploadService iUploadService = null;
 		if(profileID.equalsIgnoreCase("aws")){

@@ -12,7 +12,14 @@ import org.thb.modulkatalogcontroller.ICalculationService;
  */
 public class CalculationFactory
 {
-	
+	/**
+	 * The Factory Method is giving back the right Implementation to the Profile-ID
+	 * @param profileID
+	 * @return
+	 * @throws FileNotFoundException
+	 * @throws IllegalArgumentException
+	 * @throws IOException
+	 */
 	public static ICalculationService getCalculationService(String profileID) throws FileNotFoundException, IllegalArgumentException, IOException
 	{
 		ICalculationService iCalc =	null;

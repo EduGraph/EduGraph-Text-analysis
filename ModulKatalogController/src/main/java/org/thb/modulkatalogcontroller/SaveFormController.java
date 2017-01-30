@@ -1,6 +1,5 @@
 package org.thb.modulkatalogcontroller;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -13,7 +12,6 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.thb.modulkatalogcontroller.factory.DatabaseConnectionFactory;
@@ -84,9 +82,15 @@ public class SaveFormController implements Serializable
 		}
 
 		saveCatalogToUploadDirectory(katalog);
-
-		nextTry(katalog);
 		
+		try
+		{
+			solrConnect.deleteIndex(katalog.getModuls());
+		} catch (RemoteSolrException | IOException | SolrServerException e)
+		{
+			System.err.println("Error while deleting Index the Index of the ModulKatalog:  "+e.getMessage());
+		}
+
 		FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
 		
 		return Pages.INDEX;
@@ -142,12 +146,14 @@ public class SaveFormController implements Serializable
 			
 		}else{
 			byte[] bytes = katalog.getFileContent();
-			ByteArrayInputStream in = new ByteArrayInputStream(bytes);
 			try
 			{
-				FileOutputStream out = new FileOutputStream(new File(katalog.getFilePath().toString()));
-				IOUtils.copy(in, out);
-				in.close();
+				File saveKatalog = new File(katalog.getFilePath().toString());
+				saveKatalog.setReadable(true);
+				saveKatalog.setWritable(true);
+				FileOutputStream out = new FileOutputStream(saveKatalog);
+				out.write(bytes);
+				out.flush();
 				out.close();
 			} catch (FileNotFoundException e)
 			{

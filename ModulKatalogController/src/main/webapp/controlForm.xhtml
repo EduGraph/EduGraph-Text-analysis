@@ -40,8 +40,8 @@
 								<p:fileUpload id="fileInputValue"
 									rendered="#{katalog.type=='FILE'}"
 									allowTypes="/(\.|\/)(doc|docx|pdf)$/" mode="simple"
-									value="#{controlFormController.katalogFile}" />
-								<p:inputNumber id="numberInputValue" value="#{katalog.fieldValue}" rendered="#{katalog.type=='NUMBER'}" decimalPlaces="0" />
+									value="#{controlFormController.katalogFile}" required="true" />
+								<p:inputNumber id="numberInputValue" value="#{katalog.fieldValue}" rendered="#{katalog.type=='NUMBER'}" decimalPlaces="0" required="true" />
 							</p:column>	
 							<f:facet name="footer">
 							<p:commandButton id="submitt" value="Katalog analysieren" action="#{controlFormController.save()}" ajax="false"/>	 

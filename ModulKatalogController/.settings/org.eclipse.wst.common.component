@@ -6,6 +6,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <property name="java-output-path" value="/ModulKatalogController/target/classes"/>
         <property name="context-root" value="ModulKatalogController"/>
-        <property name="component.exclusion.patterns" value="**/profileAWS/*.class"/>
+        <property name="component.exclusion.patterns"/>
     </wb-module>
 </project-modules>
