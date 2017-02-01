@@ -4,4 +4,4 @@ jdk:
 sudo: false
 script:
   - cd ModulKatalogController
-  - mvn verify -Paws -e
+  - mvn clean verify -Paws
