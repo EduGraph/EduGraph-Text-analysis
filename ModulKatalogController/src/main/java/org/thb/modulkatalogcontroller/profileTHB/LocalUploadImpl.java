@@ -13,7 +13,6 @@ public class LocalUploadImpl implements IUploadService
 	@Override
 	public boolean uploadCatalog(String profileID, Katalog katalog)
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 

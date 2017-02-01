@@ -257,7 +257,7 @@
 			<artifactId>mongodb-driver-core</artifactId>
 			<version>${version.mongodb}</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
@@ -320,22 +320,11 @@
 	</reporting>
 
 	<profiles>
-
 		<profile>
 			<id>dev</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<!-- 
-			<dependencies>
-				<dependency>
-					<groupId>com.amazonaws</groupId>
-					<artifactId>aws-java-sdk</artifactId>
-					<version>1.11.57</version>
-					<scope>provided</scope>
-				</dependency>
-			</dependencies>
-			 -->
 			<build>
 				<plugins>
 					<plugin>
@@ -360,9 +349,18 @@
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>CalculationTestUT.java</include>
+								<include>ConnectionTestIT.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
-							<!-- <packagingExcludes>**/profileAWS/*.class</packagingExcludes> -->
 							<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory>
 						</configuration>
 					</plugin>
@@ -467,14 +465,6 @@
 				<build.profile.id>aws</build.profile.id>
 			</properties>
 			<dependencies>
-			<!--
-			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk</artifactId>
-				<version>1.11.57</version>
-				<scope>provided</scope>
-			</dependency>
-			 -->
 				<dependency>
 					<groupId>org.mongodb</groupId>
 					<artifactId>mongo-java-driver</artifactId>
@@ -493,7 +483,6 @@
 					<version>${version.mongodb}</version>
 					<scope>provided</scope>
 				</dependency>
-				 
 			</dependencies>
 			<build>
 				<plugins>
@@ -518,12 +507,20 @@
 						</executions>
 					</plugin>
 					<plugin>
-					
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<includes>
+								<include>CalculationTestUT.java</include>
+								<include>ConnectionTestAWSIT.java</include>
+							</includes>
+						</configuration>
+					</plugin>
+					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-war-plugin</artifactId>
 						<configuration>
 							<packagingExcludes>**/profileTHB/*.class</packagingExcludes>
-						<!--<outputDirectory>C:\JBoss\wildfly-10.1.0.Final\standalone\deployments</outputDirectory> -->
 						</configuration>
 					</plugin>
 					<plugin>
@@ -537,7 +534,6 @@
 							</excludes>
 						</configuration>
 					</plugin>
-					 
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>wagon-maven-plugin</artifactId>
@@ -558,7 +554,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					 
 				</plugins>
 			</build>
 		</profile>

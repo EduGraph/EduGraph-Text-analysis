@@ -10,7 +10,7 @@ public class UploadFactory
 		IUploadService iUploadService = null;
 		if(profileID.equalsIgnoreCase("aws")){
 			iUploadService = new org.thb.modulkatalogcontroller.profileAWS.AmazonS3UploadImpl();
-		}else if(profileID.equalsIgnoreCase("dev")){
+		}else if(profileID.equalsIgnoreCase("thb")){
 			iUploadService = new org.thb.modulkatalogcontroller.profileTHB.LocalUploadImpl();
 		}
 		return iUploadService;
